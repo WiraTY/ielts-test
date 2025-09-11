@@ -60,6 +60,11 @@ Administrator dapat:
 - Riwayat quiz yang sudah diikuti beserta skor
 - Kemampuan melanjutkan lesson yang sedang dipelajari
 
+### 9. Navigasi Antara Tampilan Admin dan Student
+- Tombol "View as Student" di navbar admin untuk melihat tampilan student
+- Tombol "View as Admin" di navbar student untuk admin kembali ke tampilan admin
+- Switching yang mudah antara kedua tampilan tanpa logout/login
+
 ## Perbaikan Bug & Optimasi
 - Memperbaiki route untuk lesson dan quiz management
 - Mengatasi masalah dengan timer pada quiz
@@ -74,6 +79,10 @@ Administrator dapat:
 - Memperbaiki tampilan daftar pertanyaan di halaman edit lesson dan show quiz dengan mengganti `{{ }}` menjadi `{!! !!}` agar HTML dirender dengan benar
 - Memperbaiki tampilan konten pertanyaan di halaman detail question agar HTML dirender dengan benar
 - Memodifikasi tata letak halaman create dan edit question menjadi vertikal untuk memudahkan penggunaan
+- Memperbaiki dropdown menu di navbar admin dan student
+- Memperbaiki navigasi mobile untuk semua perangkat
+- Menambahkan fungsi "View as Student" di navbar admin
+- Menambahkan fungsi "View as Admin" di navbar student untuk user dengan role admin
 
 ## Teknologi yang Digunakan
 - Laravel 10+ sebagai framework utama
@@ -170,8 +179,7 @@ Untuk mengakses dashboard student:
       - Menambahkan ikon untuk setiap menu
 
    2. Dashboard Layout telah diringkas:
-      - Mengubah statistik dari 6 kolom menjadi 3 kolom (Courses Enrolled, Average Score, Lessons        
-        Completed)
+      - Mengubah statistik dari 6 kolom menjadi 3 kolom (Courses Enrolled, Average Score, Lessons        Completed)
       - Menggabungkan "Courses Progress" dan "Continue Learning" dalam grid 2 kolom
       - Menggabungkan "Recent Quiz Attempts" dan "Recommended Courses" dalam grid 2 kolom
       - Mengurangi ukuran font dan padding untuk membuat tampilan lebih kompak
@@ -180,8 +188,12 @@ Untuk mengakses dashboard student:
    3. Redirect Otomatis untuk course:
       - Ketika hanya ada satu course trial, user langsung diarahkan ke course tersebut
 
-  Dengan perubahan ini, dashboard student menjadi lebih ringkas dan mudah dinavigasi, sesuai dengan      
-  permintaan Anda. Tampilan 2 kolom horizontal ternyata lebih cocok karena:
+   4. Navigasi Antara Tampilan Admin dan Student:
+      - Menambahkan tombol "View as Student" di navbar admin
+      - Menambahkan tombol "View as Admin" di navbar student untuk user dengan role admin
+      - Memastikan navigasi yang konsisten di semua perangkat (desktop dan mobile)
+
+  Dengan perubahan ini, dashboard student menjadi lebih ringkas dan mudah dinavigasi, sesuai dengan permintaan Anda. Tampilan 2 kolom horizontal ternyata lebih cocok karena:
    - Memberikan keseimbangan visual yang baik
    - Memungkinkan informasi penting ditampilkan secara bersamaan
    - Tidak terlalu padat namun tetap informatif

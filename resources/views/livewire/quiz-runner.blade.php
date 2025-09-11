@@ -24,7 +24,7 @@
                             </span>
                         </div>
                         
-                        <p class="text-lg mb-6">{{ $currentQuestion->question_text }}</p>
+                        <div class="text-lg mb-6">{!! $currentQuestion->question_text !!}</div>
                         
                         <div class="space-y-3">
                             @if($currentQuestion->type === 'mcq')

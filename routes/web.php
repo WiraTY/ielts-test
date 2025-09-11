@@ -43,6 +43,12 @@ Route::get('/quizzes/attempts/{attempt}', function (App\Models\QuizAttempt $atte
 })->middleware(['auth', 'verified'])
   ->name('quizzes.result');
 
+// View as Admin route
+Route::get('/admin/view', function () {
+    return redirect()->route('admin.dashboard');
+})->middleware(['auth', 'verified', 'admin'])
+  ->name('admin.view');
+
 // Admin routes
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
@@ -58,15 +64,18 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/questions/upload-image', [App\Http\Controllers\Admin\QuestionController::class, 'uploadImage'])->name('questions.upload-image');
     Route::post('/lessons/upload-image', [App\Http\Controllers\Admin\LessonController::class, 'uploadImage'])->name('lessons.upload-image');
     
-    // Tambahkan route lainnya untuk users, reports
-    Route::get('/users', \App\Livewire\Admin\UserList::class)->name('users.index');
-    Route::get('/reports', \App\Livewire\Admin\ReportList::class)->name('reports.index');
+    // User management
+    Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
 });
 
 // User routes
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Student\DashboardController::class, 'index'])->name('dashboard');
-    Route::view('profile', 'profile')->name('profile');
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile');
+    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'updateProfileInformation'])->name('profile.update');
+    Route::put('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
+    Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__.'/auth.php';

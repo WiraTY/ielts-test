@@ -44,7 +44,7 @@
                             </span>
                         </div>
                         
-                        <p class="mb-3 font-medium">{{ $question->question_text }}</p>
+                        <div class="mb-3 font-medium">{!! $question->question_text !!}</div>
                         
                         <!-- Options Section -->
                         <div class="mb-3">

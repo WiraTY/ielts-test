@@ -8,6 +8,6 @@ class QuizList extends Component
 {
     public function render()
     {
-        return view('livewire.admin.quiz-list')->layout('layouts.app');
+        return view('livewire.admin.quiz-list')->layout('layouts.admin');
     }
 }

@@ -8,6 +8,6 @@ class QuizForm extends Component
 {
     public function render()
     {
-        return view('livewire.admin.quiz-form')->layout('layouts.app');
+        return view('livewire.admin.quiz-form')->layout('layouts.admin');
     }
 }

@@ -8,6 +8,6 @@ class LessonList extends Component
 {
     public function render()
     {
-        return view('livewire.admin.lesson-list')->layout('layouts.app');
+        return view('livewire.admin.lesson-list')->layout('layouts.admin');
     }
 }

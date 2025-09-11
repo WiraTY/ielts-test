@@ -8,6 +8,6 @@ class LessonForm extends Component
 {
     public function render()
     {
-        return view('livewire.admin.lesson-form')->layout('layouts.app');
+        return view('livewire.admin.lesson-form')->layout('layouts.admin');
     }
 }

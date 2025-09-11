@@ -37,6 +37,7 @@ The Trial Class Application is a Laravel + Livewire platform designed for educat
 - User management
 - Progress tracking and reporting
 - Content upload capabilities
+- Quick switching between admin and student views
 
 ### Technical Features:
 - Responsive design with TailwindCSS
@@ -45,6 +46,7 @@ The Trial Class Application is a Laravel + Livewire platform designed for educat
 - Progress tracking
 - Quiz timer functionality
 - Results calculation and display
+- View switching between admin and student perspectives
 
 ## Technology Stack
 
@@ -237,6 +239,7 @@ database/
 3. Manage courses, lessons, quizzes, and questions using the CRUD interfaces
 4. Monitor student progress and quiz results
 5. Upload content and manage users
+6. Switch to student view using "View as Student" button to preview student experience
 
 ### Default Credentials
 - Admin: 
@@ -255,6 +258,7 @@ Can perform all management functions:
 - Create and edit quizzes and questions
 - View student progress and results
 - Manage user accounts
+- Switch between admin and student views
 
 ### Student
 Can access learning content:
@@ -444,6 +448,28 @@ For additional support:
 3. Review application logs in `storage/logs/laravel.log`
 
 ## Recent Updates and Changes
+
+### September 11, 2025
+
+#### View Switching Enhancement
+- Added "View as Student" button in admin navbar for easy switching between admin and student perspectives
+- Added "View as Admin" button in student navbar for admin users to switch back to admin view
+- Implemented seamless navigation between views without requiring logout/login
+- Enhanced responsive design for view switching on mobile devices
+
+#### Navigation Improvements
+- Fixed dropdown menu functionality in both admin and student layouts
+- Improved mobile navigation menu toggle behavior
+- Ensured consistent navigation structure across all device sizes
+- Added proper JavaScript event handling for dropdown menus
+
+#### UI/UX Enhancements
+- Streamlined navigation order in student view (Dashboard → Courses)
+- Streamlined navigation order in admin view (Dashboard → Users → Courses → Reports)
+- Improved visual consistency between admin and student layouts
+- Enhanced accessibility with proper focus states and keyboard navigation
+
+These updates improve the user experience for administrators by allowing them to easily preview the student perspective without leaving their session. The navigation improvements ensure consistent and intuitive access to all application features across different user roles and device types.
 
 ### September 9, 2025
 
