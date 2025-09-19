@@ -103,7 +103,7 @@
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- User Management -->
                     <div class="bg-white rounded-lg shadow p-6">
                         <h2 class="text-xl font-bold mb-4">User Management</h2>
@@ -119,15 +119,6 @@
                         <p class="text-gray-600 mb-4">View reports and analytics</p>
                         <a href="{{ route('admin.reports.index') }}" class="block w-full bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 px-4 rounded text-center">
                             View Reports
-                        </a>
-                    </div>
-                    
-                    <!-- Settings -->
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h2 class="text-xl font-bold mb-4">Settings</h2>
-                        <p class="text-gray-600 mb-4">System configuration</p>
-                        <a href="#" class="block w-full bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded text-center">
-                            System Settings
                         </a>
                     </div>
                 </div>

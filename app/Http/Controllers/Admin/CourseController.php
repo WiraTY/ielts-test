@@ -7,6 +7,7 @@ use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
@@ -56,6 +57,7 @@ class CourseController extends Controller
             'is_trial' => 'boolean', // Now this will always be true or false
             'order' => 'integer|min:0',
             'status' => 'required|in:draft,published',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
         ])->validate();
 
         $slug = Str::slug($request->title);
@@ -67,10 +69,17 @@ class CourseController extends Controller
         // Get the next order value if not provided
         $order = $validatedData['order'] ?? Course::max('order') + 1;
 
+        // Handle thumbnail upload
+        $thumbnailPath = null;
+        if ($request->hasFile('thumbnail')) {
+            $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
+        }
+
         $course = Course::create([
             'title' => $validatedData['title'],
             'slug' => $slug,
             'description' => $validatedData['description'],
+            'thumbnail_path' => $thumbnailPath,
             'is_trial' => $validatedData['is_trial'],
             'order' => $order,
             'created_by' => auth()->id(),
@@ -125,6 +134,7 @@ class CourseController extends Controller
             'is_trial' => 'boolean', // Now this will always be true or false
             'order' => 'integer|min:0',
             'status' => 'required|in:draft,published',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB
         ])->validate();
 
         $slug = Str::slug($request->title);
@@ -136,9 +146,21 @@ class CourseController extends Controller
             $course->slug = $slug;
         }
 
+        // Handle thumbnail upload
+        $thumbnailPath = $course->thumbnail_path; // Keep existing thumbnail if not updated
+        if ($request->hasFile('thumbnail')) {
+            // Delete old thumbnail if exists
+            if ($course->thumbnail_path) {
+                Storage::disk('public')->delete($course->thumbnail_path);
+            }
+            // Store new thumbnail
+            $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
+        }
+
         $course->update([
             'title' => $validatedData['title'],
             'description' => $validatedData['description'],
+            'thumbnail_path' => $thumbnailPath,
             'is_trial' => $validatedData['is_trial'],
             'order' => $validatedData['order'],
             'published_at' => $validatedData['status'] === 'published' ? now() : null,
@@ -154,6 +176,11 @@ class CourseController extends Controller
     {
         // Check if user is authorized to delete this course
         Gate::authorize('delete', $course);
+        
+        // Delete thumbnail if exists
+        if ($course->thumbnail_path) {
+            Storage::disk('public')->delete($course->thumbnail_path);
+        }
         
         $course->delete();
         return redirect()->route('admin.courses.index')->with('success', 'Course deleted successfully.');

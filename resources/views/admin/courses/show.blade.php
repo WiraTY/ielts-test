@@ -78,6 +78,17 @@
                     </div>
 
                     <div class="md:col-span-2">
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Thumbnail</h3>
+                        <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                            @if($course->thumbnail_path)
+                                <img src="{{ asset('storage/' . $course->thumbnail_path) }}" alt="{{ $course->title }}" class="w-full h-48 object-cover rounded">
+                            @else
+                                <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-48 flex items-center justify-center">
+                                    <span class="text-gray-500">No thumbnail uploaded</span>
+                                </div>
+                            @endif
+                        </div>
+                        
                         <h3 class="text-lg font-medium text-gray-900 mb-2">Description</h3>
                         <div class="bg-gray-50 p-4 rounded-lg">
                             @if($course->description)
@@ -98,57 +109,69 @@
                     </div>
 
                     @if($course->lessons->count() > 0)
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Order
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Title
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Duration
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Actions
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($course->lessons->sortBy('order') as $lesson)
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $lesson->order }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900">{{ $lesson->title }}</div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm text-gray-500">
+                        <div class="grid grid-cols-1 gap-4">
+                            @foreach($course->lessons->sortBy('order') as $lesson)
+                                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <div class="flex items-center">
+                                                <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-gray-200 text-xs font-medium text-gray-700 mr-2">
+                                                    {{ $lesson->order }}
+                                                </span>
+                                                <h3 class="text-lg font-medium text-gray-900">{{ $lesson->title }}</h3>
+                                            </div>
+                                            
+                                            <div class="mt-2 flex flex-wrap gap-2">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                     @if($lesson->duration > 0)
                                                         {{ gmdate('H:i:s', $lesson->duration) }}
                                                     @else
-                                                        -
+                                                        No duration
                                                     @endif
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <a href="{{ route('admin.courses.lessons.show', [$course, $lesson]) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
-                                                <a href="{{ route('admin.courses.lessons.edit', [$course, $lesson]) }}" class="ml-4 text-indigo-600 hover:text-indigo-900">Edit</a>
-                                                <form action="{{ route('admin.courses.lessons.destroy', [$course, $lesson]) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="ml-4 text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this lesson? This action cannot be undone.')">
-                                                        Delete
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                                </span>
+                                                
+                                                @if($lesson->video_url)
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                        Has video
+                                                    </span>
+                                                @endif
+                                                
+                                                @if($lesson->quizzes && $lesson->quizzes->count() > 0)
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        {{ $lesson->quizzes->count() }} quiz{{ $lesson->quizzes->count() > 1 ? 'zes' : '' }}
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                        No quiz
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            
+                                            @if($lesson->content)
+                                                <p class="mt-2 text-sm text-gray-600 line-clamp-2">
+                                                    {{ Str::limit(strip_tags($lesson->content), 100) }}
+                                                </p>
+                                            @endif
+                                        </div>
+                                        
+                                        <div class="flex flex-col space-y-2 ml-4">
+                                            <a href="{{ route('admin.courses.lessons.show', [$course, $lesson]) }}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-1 px-3 rounded">
+                                                View Details
+                                            </a>
+                                            <a href="{{ route('admin.courses.lessons.edit', [$course, $lesson]) }}" class="bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-medium py-1 px-3 rounded text-center flex items-center justify-center">
+                                                Edit
+                                            </a>
+                                            <form action="{{ route('admin.courses.lessons.destroy', [$course, $lesson]) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1 px-3 rounded" onclick="return confirm('Are you sure you want to delete this lesson? This action cannot be undone.')">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     @else
                         <div class="text-center py-8 bg-gray-50 rounded-lg">

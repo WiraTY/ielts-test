@@ -25,7 +25,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.courses.update', $course) }}" method="POST">
+                <form action="{{ route('admin.courses.update', $course) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -48,6 +48,18 @@
                         <div>
                             <label for="order" class="block text-sm font-medium text-gray-700 mb-2">Order</label>
                             <input type="number" id="order" name="order" value="{{ old('order', $course->order) }}" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Enter order number">
+                        </div>
+                        
+                        <div>
+                            <label for="thumbnail" class="block text-sm font-medium text-gray-700 mb-2">Thumbnail</label>
+                            <input type="file" id="thumbnail" name="thumbnail" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <p class="mt-1 text-sm text-gray-500">Max file size: 2MB. Supported formats: JPEG, PNG, JPG, GIF. Recommended size: 400px x 200px (2:1 ratio).</p>
+                            @if($course->thumbnail_path)
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-600">Current thumbnail:</p>
+                                    <img src="{{ asset('storage/' . $course->thumbnail_path) }}" alt="{{ $course->title }}" class="mt-1 w-32 h-32 object-cover rounded">
+                                </div>
+                            @endif
                         </div>
                     </div>
 

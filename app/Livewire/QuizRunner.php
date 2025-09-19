@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\QuizAnswer;
+use App\Models\Progress;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 use Illuminate\Support\Facades\Log;
@@ -129,6 +130,21 @@ class QuizRunner extends Component
             'score' => $totalScore,
             'status' => 'completed'
         ]);
+        
+        // Automatically mark the lesson as completed when quiz is completed
+        $lesson = $this->quiz->lesson;
+        if ($lesson) {
+            $progress = Progress::updateOrCreate(
+                [
+                    'user_id' => auth()->id(),
+                    'lesson_id' => $lesson->id
+                ],
+                [
+                    'status' => 'completed',
+                    'completed_at' => now()
+                ]
+            );
+        }
         
         $this->isSubmitted = true;
         

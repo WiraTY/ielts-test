@@ -50,10 +50,26 @@
                 
                 <div>
                     @if($lesson->quizzes && $lesson->quizzes->count() > 0)
-                        <a href="{{ route('quizzes.start', $lesson->quizzes->first()->id) }}" 
-                           class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded">
-                            Take Quiz
-                        </a>
+                        @php
+                            $quiz = $lesson->quizzes->first();
+                        @endphp
+                        
+                        @if($quizAttempt)
+                            <div class="flex items-center space-x-2">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                    Quiz Completed
+                                </span>
+                                <a href="{{ route('quizzes.result', $quizAttempt->id) }}" 
+                                   class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded">
+                                    Review Quiz Results
+                                </a>
+                            </div>
+                        @else
+                            <a href="{{ route('quizzes.start', $quiz->id) }}" 
+                               class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded">
+                                Take Quiz
+                            </a>
+                        @endif
                     @else
                         <!-- No quiz for this lesson -->
                     @endif

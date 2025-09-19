@@ -47,6 +47,7 @@ The Trial Class Application is a Laravel + Livewire platform designed for educat
 - Quiz timer functionality
 - Results calculation and display
 - View switching between admin and student perspectives
+- Course thumbnail management with recommended size 400px x 200px (2:1 ratio)
 
 ## Technology Stack
 
@@ -110,7 +111,7 @@ database/
 - slug (string, unique)
 - title (string)
 - description (text, nullable)
-- thumbnail_path (string, nullable)
+- thumbnail_path (string, nullable) - Stores path to thumbnail image. Recommended size: 400px x 200px (2:1 ratio) for optimal display in course listings.
 - is_trial (boolean, default: true)
 - created_by (foreign key to users.id)
 - published_at (timestamp, nullable)
@@ -448,6 +449,64 @@ For additional support:
 3. Review application logs in `storage/logs/laravel.log`
 
 ## Recent Updates and Changes
+
+### September 18, 2025
+
+#### Course Thumbnail Management Enhancement
+- Added thumbnail upload functionality to admin course management
+- Implemented file upload handling in `Admin\CourseController` for both create and update operations
+- Modified course create/edit forms to include thumbnail upload field with validation (max 2MB, jpeg/png/jpg/gif formats)
+- Updated database storage to save thumbnail paths in the `thumbnail_path` column
+- Added automatic thumbnail deletion when courses are deleted
+- Implemented proper file storage in `storage/app/public/thumbnails` with public access via `/storage/thumbnails/{filename}`
+- Created symbolic link between `public/storage` and `storage/app/public` for thumbnail access
+- Added recommended thumbnail size guidance (400px x 250px) in admin forms and documentation
+
+#### Student Course Thumbnail Display Fix
+- Fixed thumbnail display issue in student course listings
+- Updated `livewire/course-list.blade.php` to properly reference stored thumbnail files using `asset('storage/' . $course->thumbnail_path)`
+- Ensured thumbnails are correctly displayed with proper styling and fallback for courses without thumbnails
+
+#### Course Enrollment Functionality Enhancement
+- Implemented functional "Enroll Now" button in course detail view
+- Added `enroll()` method to `CourseDetail` Livewire component to redirect users to the first lesson of a course
+- Modified course detail view to use Livewire's `wire:click` directive for enrollment action
+- Clarified enrollment mechanism: users are considered "enrolled" when they have progress records in any lesson of a course
+- Improved dashboard to display "Courses Enrolled" based on this implicit enrollment model
+
+#### Thumbnail Size Optimization
+- Refined recommended thumbnail size based on actual display dimensions in course listings
+- Updated documentation to recommend 400px x 200px (2:1 ratio) for optimal display across all breakpoints
+- Added technical analysis of thumbnail display in `livewire/course-list.blade.php` showing `h-48` (192px) height with responsive width
+- Specified that thumbnails are displayed with `object-cover` CSS property which crops images to fit the container
+- Recommended size accounts for 3-column grid on desktop (lg:grid-cols-3), 2-column on tablet (md:grid-cols-2), and 1-column on mobile
+
+These updates enhance both the administrative and student experience with courses. Administrators can now easily add visual context to courses through thumbnails, while students benefit from a functional enrollment process that guides them directly into the learning content. The thumbnail display fix ensures a more engaging course browsing experience.
+
+### September 12, 2025
+
+#### Course Page UI/UX Improvements
+- Refined student course detail page with cleaner, more focused design
+- Integrated course information and progress tracking in a unified header section
+- Improved lesson cards with better spacing and visual hierarchy
+- Added "Continue from lesson X" indicator to help students resume learning
+- Enhanced responsive design for better mobile experience
+- Streamlined enrollment actions with more prominent buttons
+
+#### Course Completion Status Enhancement
+- Added automatic lesson completion tracking when students finish associated quizzes
+- Implemented real-time course completion status calculation without database modifications
+- Added "Completed" badges to course cards in the main course catalog (http://127.0.0.1:8000/courses) for authenticated users
+- Enhanced dashboard to display course progress with percentage and progress bars
+- Removed redundant "Completed" badges from dashboard since progress information is already displayed
+- Improved user experience by providing clear visual feedback on course completion status
+
+#### Quiz and Lesson Integration
+- Automatically mark lessons as completed when associated quizzes are finished
+- Enhanced quiz completion flow to update lesson progress in real-time
+- Improved quiz result viewing experience with better navigation and feedback
+
+These updates provide students with better visibility into their progress through courses and create a more seamless learning experience by automatically tracking completion status as they progress through lessons and quizzes.
 
 ### September 11, 2025
 

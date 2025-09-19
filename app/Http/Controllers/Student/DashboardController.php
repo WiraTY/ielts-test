@@ -22,22 +22,24 @@ class DashboardController extends Controller
                   ->with('progress'); // Load progress relationship
         }])->get();
 
-        // Calculate progress for each course
+        // Calculate progress for each course using the new method
         $coursesWithProgress = [];
+        $totalCoursesCompleted = 0;
+        
         foreach ($enrolledCourses as $course) {
-            $totalLessons = $course->lessons->count();
-            $completedLessons = $course->lessons->filter(function ($lesson) {
-                return $lesson->progress && $lesson->progress->status === 'completed';
-            })->count();
-            
-            $progressPercentage = $totalLessons > 0 ? ($completedLessons / $totalLessons) * 100 : 0;
+            $progress = $course->getUserProgress(Auth::id());
             
             $coursesWithProgress[] = [
                 'course' => $course,
-                'progress_percentage' => round($progressPercentage, 2),
-                'completed_lessons' => $completedLessons,
-                'total_lessons' => $totalLessons
+                'progress_percentage' => $progress['percentage'],
+                'completed_lessons' => $progress['completed'],
+                'total_lessons' => $progress['total'],
+                'is_completed' => $progress['is_completed']
             ];
+            
+            if ($progress['is_completed']) {
+                $totalCoursesCompleted++;
+            }
         }
 
         // Get user's quiz attempts with more details
@@ -73,14 +75,6 @@ class DashboardController extends Controller
         $totalLessonsCompleted = Progress::where('user_id', Auth::id())
             ->where('status', 'completed')
             ->count();
-
-        // Get total courses completed (all lessons completed)
-        $totalCoursesCompleted = 0;
-        foreach ($coursesWithProgress as $courseData) {
-            if ($courseData['progress_percentage'] == 100) {
-                $totalCoursesCompleted++;
-            }
-        }
 
         // Get total quizzes passed
         $totalQuizzesPassed = $quizAttempts->filter(function ($attempt) {

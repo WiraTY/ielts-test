@@ -24,7 +24,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.courses.store') }}" method="POST">
+                <form action="{{ route('admin.courses.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -46,6 +46,12 @@
                         <div>
                             <label for="order" class="block text-sm font-medium text-gray-700 mb-2">Order</label>
                             <input type="number" id="order" name="order" value="{{ old('order', 0) }}" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Enter order number">
+                        </div>
+                        
+                        <div>
+                            <label for="thumbnail" class="block text-sm font-medium text-gray-700 mb-2">Thumbnail</label>
+                            <input type="file" id="thumbnail" name="thumbnail" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <p class="mt-1 text-sm text-gray-500">Max file size: 2MB. Supported formats: JPEG, PNG, JPG, GIF. Recommended size: 400px x 200px (2:1 ratio).</p>
                         </div>
                     </div>
 

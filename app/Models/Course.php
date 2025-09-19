@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Progress;
 
 class Course extends Model
 {
@@ -38,5 +39,35 @@ class Course extends Model
     public function quizzes(): HasMany
     {
         return $this->hasMany(Quiz::class);
+    }
+    
+    public function getUserProgress($userId)
+    {
+        $totalLessons = $this->lessons->count();
+        
+        if ($totalLessons === 0) {
+            return [
+                'total' => 0,
+                'completed' => 0,
+                'percentage' => 0,
+                'is_completed' => false
+            ];
+        }
+        
+        $completedLessons = Progress::where('user_id', $userId)
+            ->whereHas('lesson', function($query) {
+                $query->where('course_id', $this->id);
+            })
+            ->where('status', 'completed')
+            ->count();
+        
+        $percentage = ($completedLessons / $totalLessons) * 100;
+        
+        return [
+            'total' => $totalLessons,
+            'completed' => $completedLessons,
+            'percentage' => round($percentage),
+            'is_completed' => ($totalLessons > 0 && $totalLessons == $completedLessons)
+        ];
     }
 }
