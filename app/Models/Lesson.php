@@ -15,11 +15,14 @@ class Lesson extends Model
         'title',
         'content',
         'video_url',
+        'audio_path',
+        'speaking_duration',
         'order'
     ];
 
     protected $casts = [
-        'order' => 'integer'
+        'order' => 'integer',
+        'speaking_duration' => 'integer'
     ];
 
     public function course(): BelongsTo

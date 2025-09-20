@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Progress;
 use App\Models\QuizAttempt;
+use App\Models\StudentRecording;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -81,6 +82,13 @@ class DashboardController extends Controller
             return $attempt->score >= $attempt->quiz->pass_score;
         })->count();
 
+        // Get recent student recordings
+        $recentRecordings = StudentRecording::where('user_id', Auth::id())
+            ->with(['lesson.course'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
         return view('student.dashboard', compact(
             'coursesWithProgress', 
             'quizAttempts', 
@@ -89,7 +97,8 @@ class DashboardController extends Controller
             'recommendedCourses',
             'totalLessonsCompleted',
             'totalCoursesCompleted',
-            'totalQuizzesPassed'
+            'totalQuizzesPassed',
+            'recentRecordings'
         ));
     }
 }

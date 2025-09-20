@@ -13,6 +13,7 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
@@ -39,6 +40,12 @@
                                 <x-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.*')">
                                     {{ __('Courses') }}
                                 </x-nav-link>
+                                
+                                @auth
+                                <x-nav-link :href="route('recordings.index')" :active="request()->routeIs('recordings.*')">
+                                    {{ __('My Recordings') }}
+                                </x-nav-link>
+                                @endauth
                                 
                                 <!-- View as Admin for admins -->
                                 @auth
@@ -120,6 +127,12 @@
                         <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.*')">
                             {{ __('Courses') }}
                         </x-responsive-nav-link>
+                        
+                        @auth
+                        <x-responsive-nav-link :href="route('recordings.index')" :active="request()->routeIs('recordings.*')">
+                            {{ __('My Recordings') }}
+                        </x-responsive-nav-link>
+                        @endauth
                         
                         <!-- View as Admin for admins -->
                         @auth

@@ -6,6 +6,8 @@ use App\Livewire\LessonViewer;
 use App\Livewire\QuizRunner;
 use App\Livewire\QuizResult;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Student\RecordingController;
+use App\Http\Controllers\Admin\AudioController;
 
 Route::get('/', function () {
     return redirect()->route('courses.index');
@@ -43,6 +45,11 @@ Route::get('/quizzes/attempts/{attempt}', function (App\Models\QuizAttempt $atte
 })->middleware(['auth', 'verified'])
   ->name('quizzes.result');
 
+// Student recordings
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/recordings', [RecordingController::class, 'index'])->name('recordings.index');
+});
+
 // View as Admin route
 Route::get('/admin/view', function () {
     return redirect()->route('admin.dashboard');
@@ -70,6 +77,12 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/users/{user}/disable', [App\Http\Controllers\Admin\UserController::class, 'disable'])->name('users.disable');
     Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
 });
+
+// Audio recording storage - accessible by all authenticated users
+Route::middleware(['auth', 'verified'])->post('/audio/store', [App\Http\Controllers\Admin\AudioController::class, 'store'])->name('audio.store');
+Route::middleware(['auth', 'verified'])->delete('/audio/{recording}', [App\Http\Controllers\Admin\AudioController::class, 'destroy'])->name('audio.destroy');
+
+// User routes
 
 // User routes
 Route::middleware(['auth', 'verified'])->group(function () {

@@ -31,7 +31,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.courses.lessons.update', [$course, $lesson]) }}" method="POST">
+                <form action="{{ route('admin.courses.lessons.update', [$course, $lesson]) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -63,6 +63,23 @@
                     <div class="mb-6">
                         <label for="video_url" class="block text-sm font-medium text-gray-700 mb-2">Video URL</label>
                         <input type="url" id="video_url" name="video_url" value="{{ old('video_url', $lesson->video_url) }}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Enter video URL">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="audio_file" class="block text-sm font-medium text-gray-700 mb-2">Audio File</label>
+                            <input type="file" id="audio_file" name="audio_file" accept="audio/*" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <p class="mt-1 text-sm text-gray-500">Upload an audio file for listening practice (MP3 or WAV, max 5MB)</p>
+                            @if($lesson->audio_path)
+                                <p class="mt-1 text-sm text-green-600">Current audio file: {{ basename($lesson->audio_path) }}</p>
+                            @endif
+                        </div>
+
+                        <div>
+                            <label for="speaking_duration" class="block text-sm font-medium text-gray-700 mb-2">Speaking Duration (seconds)</label>
+                            <input type="number" id="speaking_duration" name="speaking_duration" value="{{ old('speaking_duration', $lesson->speaking_duration) }}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Enter duration in seconds" min="1" max="300">
+                            <p class="mt-1 text-sm text-gray-500">Set time limit for speaking practice (1-300 seconds)</p>
+                        </div>
                     </div>
 
                     <!-- Quiz Section -->

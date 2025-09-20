@@ -30,9 +30,25 @@
                 </div>
             @endif
             
+            <!-- Audio Player -->
+            @if($lesson->audio_path)
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">Audio Listening</h2>
+                    <livewire:audio-player :lesson-id="$lesson->id" :audio-path="$lesson->audio_path" />
+                </div>
+            @endif
+            
             <div class="content-editor max-w-none mb-6">
                 {!! $lesson->content !!}
             </div>
+            
+            <!-- Speaking Practice -->
+            @if($lesson->speaking_duration)
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">Speaking Practice</h2>
+                    <livewire:audio-recorder :lesson-id="$lesson->id" :duration="$lesson->speaking_duration" />
+                </div>
+            @endif
             
             <div class="flex items-center justify-between mt-8">
                 <div>

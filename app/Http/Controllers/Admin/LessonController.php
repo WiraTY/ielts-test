@@ -47,6 +47,8 @@ class LessonController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
             'video_url' => 'nullable|url',
+            'audio_file' => 'nullable|file|mimes:mp3,wav|max:5120', // 5MB max
+            'speaking_duration' => 'nullable|integer|min:1|max:300', // 5 minutes max
             'order' => 'nullable|integer|min:0',
             'status' => 'required|in:draft,published',
         ]);
@@ -57,11 +59,19 @@ class LessonController extends Controller
             $slug = $slug . '-' . ($count + 1);
         }
 
+        // Handle audio file upload
+        $audioPath = null;
+        if ($request->hasFile('audio_file')) {
+            $audioPath = $request->file('audio_file')->store('lesson-audio', 'public');
+        }
+
         $lesson = $course->lessons()->create([
             'slug' => $slug,
             'title' => $request->title,
             'content' => $request->content,
             'video_url' => $request->video_url,
+            'audio_path' => $audioPath,
+            'speaking_duration' => $request->speaking_duration,
             'order' => $request->order ?? 0,
             'published_at' => $request->status === 'published' ? now() : null,
         ]);
@@ -105,6 +115,8 @@ class LessonController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
             'video_url' => 'nullable|url',
+            'audio_file' => 'nullable|file|mimes:mp3,wav|max:5120', // 5MB max
+            'speaking_duration' => 'nullable|integer|min:1|max:300', // 5 minutes max
             'order' => 'nullable|integer|min:0',
             'status' => 'required|in:draft,published',
             // Quiz validation rules
@@ -122,10 +134,22 @@ class LessonController extends Controller
             $lesson->slug = $slug;
         }
 
+        // Handle audio file upload
+        if ($request->hasFile('audio_file')) {
+            // Delete old audio file if exists
+            if ($lesson->audio_path) {
+                Storage::disk('public')->delete($lesson->audio_path);
+            }
+            
+            $audioPath = $request->file('audio_file')->store('lesson-audio', 'public');
+            $lesson->audio_path = $audioPath;
+        }
+
         $lesson->update([
             'title' => $request->title,
             'content' => $request->content,
             'video_url' => $request->video_url,
+            'speaking_duration' => $request->speaking_duration,
             'order' => $request->order ?? 0,
             'published_at' => $request->status === 'published' ? now() : null,
         ]);
