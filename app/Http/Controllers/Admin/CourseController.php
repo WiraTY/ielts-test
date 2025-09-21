@@ -185,4 +185,54 @@ class CourseController extends Controller
         $course->delete();
         return redirect()->route('admin.courses.index')->with('success', 'Course deleted successfully.');
     }
+    
+    /**
+     * Show the form for bulk level assignment
+     */
+    public function showBulkAssignLevel()
+    {
+        // Check if user is authorized to update courses
+        Gate::authorize('updateAny', Course::class);
+        
+        $courses = Course::orderBy('title')->get();
+        
+        // Get level distribution
+        $starterCount = Course::where('level', 'starter')->count();
+        $beginnerCount = Course::where('level', 'beginner')->count();
+        $elementaryCount = Course::where('level', 'elementary')->count();
+        $intermediateCount = Course::where('level', 'intermediate')->count();
+        $advancedCount = Course::where('level', 'advanced')->count();
+        
+        return view('admin.courses.bulk-assign-level', compact(
+            'courses',
+            'starterCount',
+            'beginnerCount',
+            'elementaryCount',
+            'intermediateCount',
+            'advancedCount'
+        ));
+    }
+    
+    /**
+     * Handle bulk level assignment
+     */
+    public function bulkAssignLevel(Request $request)
+    {
+        // Check if user is authorized to update courses
+        Gate::authorize('updateAny', Course::class);
+        
+        // Validate the data
+        $validatedData = $request->validate([
+            'level' => 'required|in:starter,beginner,elementary,intermediate,advanced',
+            'courses' => 'required|array',
+            'courses.*' => 'exists:courses,id'
+        ]);
+        
+        // Update courses
+        Course::whereIn('id', $validatedData['courses'])->update([
+            'level' => $validatedData['level']
+        ]);
+        
+        return redirect()->back()->with('success', 'Courses updated successfully.');
+    }
 }

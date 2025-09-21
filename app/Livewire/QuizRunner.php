@@ -144,6 +144,9 @@ class QuizRunner extends Component
                     'completed_at' => now()
                 ]
             );
+            
+            // Check if the course is completed after this lesson completion
+            $this->checkCourseCompletion($lesson->course);
         }
         
         $this->isSubmitted = true;
@@ -200,6 +203,36 @@ class QuizRunner extends Component
         $score = $correct ? $question->score : 0;
         Log::info('Calculated score for question ' . $question->id . ': ' . $score);
         return $score;
+    }
+
+    /**
+     * Check if the course is completed after a lesson is completed
+     */
+    private function checkCourseCompletion($course)
+    {
+        if (!$course) {
+            return;
+        }
+        
+        // Check if all lessons in the course are completed
+        $allLessonsCompleted = true;
+        foreach ($course->lessons as $lesson) {
+            $progress = Progress::where('user_id', auth()->id())
+                ->where('lesson_id', $lesson->id)
+                ->where('status', 'completed')
+                ->exists();
+                
+            if (!$progress) {
+                $allLessonsCompleted = false;
+                break;
+            }
+        }
+        
+        // If all lessons are completed, dispatch CourseCompleted event
+        if ($allLessonsCompleted) {
+            $user = auth()->user();
+            \App\Events\CourseCompleted::dispatch($user, $course);
+        }
     }
 
     public function render()

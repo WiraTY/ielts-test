@@ -12,8 +12,26 @@
                 ['label' => 'Home', 'url' => route('dashboard')]
             ]" />
 
+            <!-- Placement Test Reminder for students who haven't taken the test -->
+            @auth
+                @if(!Auth::user()->hasCompletedPlacementTest())
+                <div class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-medium text-blue-800 mb-1">Placement Test Required</h3>
+                            <p class="text-blue-700 mb-2">Take the placement test to determine your English proficiency level and unlock appropriate courses.</p>
+                            <p class="text-sm text-blue-600">Your current level: Starter (default)</p>
+                        </div>
+                        <a href="{{ route('placement-tests.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            Take Placement Test
+                        </a>
+                    </div>
+                </div>
+                @endif
+            @endauth
+
             <!-- Stats Overview -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -61,6 +79,26 @@
                         </div>
                     </div>
                 </div>
+                
+                @auth
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-yellow-100 p-3 rounded-full">
+                                    <svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-sm font-medium text-gray-500">Current Level</h3>
+                                    <p class="text-2xl font-semibold text-gray-900">
+                                        {{ Auth::user()->getCurrentLevel() }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endauth
             </div>
 
             <!-- Courses Progress and Continue Learning -->

@@ -42,6 +42,13 @@
                                 </x-nav-link>
                                 
                                 @auth
+                                <!-- Placement Tests menu for students who haven't taken the test -->
+                                @if(auth()->user() && !auth()->user()->hasCompletedPlacementTest())
+                                <x-nav-link :href="route('placement-tests.index')" :active="request()->routeIs('placement-tests.*')">
+                                    {{ __('Placement Test') }}
+                                </x-nav-link>
+                                @endif
+                                
                                 <x-nav-link :href="route('recordings.index')" :active="request()->routeIs('recordings.*')">
                                     {{ __('My Recordings') }}
                                 </x-nav-link>
@@ -129,6 +136,13 @@
                         </x-responsive-nav-link>
                         
                         @auth
+                        <!-- Placement Tests menu for students who haven't taken the test -->
+                        @if(auth()->user() && !auth()->user()->hasCompletedPlacementTest())
+                        <x-responsive-nav-link :href="route('placement-tests.index')" :active="request()->routeIs('placement-tests.*')">
+                            {{ __('Placement Test') }}
+                        </x-responsive-nav-link>
+                        @endif
+                        
                         <x-responsive-nav-link :href="route('recordings.index')" :active="request()->routeIs('recordings.*')">
                             {{ __('My Recordings') }}
                         </x-responsive-nav-link>

@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -23,7 +24,11 @@ class User extends Authenticatable
         'password',
         'role',
         'avatar',
-        'email_verified_at', // Added this line
+        'email_verified_at',
+        'has_taken_placement_test',
+        'assigned_level',
+        'current_level',
+        'unlocked_levels'
     ];
 
     /**
@@ -46,6 +51,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'has_taken_placement_test' => 'boolean',
+            'unlocked_levels' => 'array'
         ];
     }
     
@@ -55,5 +62,74 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Get user's placement test attempts
+     */
+    public function placementTestAttempts(): HasMany
+    {
+        return $this->hasMany(PlacementTestAttempt::class);
+    }
+
+    /**
+     * Get user's course progress
+     */
+    public function progress(): HasMany
+    {
+        return $this->hasMany(Progress::class);
+    }
+
+    /**
+     * Check if user has access to a specific level
+     */
+    public function hasAccessToLevel($level): bool
+    {
+        $unlockedLevels = $this->unlocked_levels ?? [];
+        return in_array($level, $unlockedLevels) || $level === $this->current_level;
+    }
+
+    /**
+     * Check if user has completed placement test
+     */
+    public function hasCompletedPlacementTest(): bool
+    {
+        return $this->has_taken_placement_test;
+    }
+
+    /**
+     * Get user's assigned level
+     */
+    public function getAssignedLevel()
+    {
+        return $this->assigned_level ?? 'starter';
+    }
+
+    /**
+     * Get user's current accessible level
+     */
+    public function getCurrentLevel()
+    {
+        return $this->current_level ?? 'starter';
+    }
+    
+    /**
+     * Check if user has completed a specific course
+     */
+    public function hasCompletedCourse(Course $course): bool
+    {
+        // Check if user has completed all lessons in the course
+        foreach ($course->lessons as $lesson) {
+            $progress = $this->progress()
+                ->where('lesson_id', $lesson->id)
+                ->where('status', 'completed')
+                ->exists();
+                
+            if (!$progress) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 }

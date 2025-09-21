@@ -21,6 +21,14 @@
                         @endauth
                     </div>
                     <p class="text-gray-600 mb-4">{{ Str::limit($course->description, 100) }}</p>
+                    
+                    <!-- Level indicator -->
+                    <div class="mb-4">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            Level: {{ ucfirst($course->level) }}
+                        </span>
+                    </div>
+                    
                     <a href="{{ route('courses.show', $course->slug) }}" 
                        class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded">
                         View Course

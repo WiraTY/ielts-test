@@ -23,7 +23,7 @@ class LessonViewer extends Component
         
         $this->course = $course;
         // Load lesson with quiz relation
-        $this->lesson = $lesson->load('quizzes');
+        $this->lesson = $lesson->load(['quizzes', 'audio', 'speaking']);
         
         // Get or create progress for this lesson
         if (auth()->check()) {

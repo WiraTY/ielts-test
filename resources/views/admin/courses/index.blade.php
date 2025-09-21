@@ -1,22 +1,27 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900">
-                <!-- Breadcrumb -->
-                <x-breadcrumb :breadcrumbs="[
-                    ['label' => 'Admin', 'url' => route('admin.dashboard')],
-                    ['label' => 'Courses', 'url' => route('admin.courses.index')]
-                ]" />
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Breadcrumb -->
+    <x-breadcrumb :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+        ['label' => 'Courses', 'url' => null]
+    ]" />
 
-                <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-2xl font-bold">Course Management</h1>
-                    <a href="{{ route('admin.courses.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded">
-                        Create New Course
-                    </a>
-                </div>
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Courses</h1>
+        <div class="flex space-x-2">
+            <a href="{{ route('admin.courses.bulk-assign-level') }}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Bulk Level Assignment
+            </a>
+            <a href="{{ route('admin.courses.create') }}" 
+               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Create New Course
+            </a>
+        </div>
+    </div>
 
                 @if(session('success'))
                     <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">

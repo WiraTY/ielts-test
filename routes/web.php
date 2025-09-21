@@ -63,7 +63,14 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     })->name('dashboard');
     
     Route::resource('courses', App\Http\Controllers\Admin\CourseController::class);
+    Route::get('/courses/bulk-assign-level', [App\Http\Controllers\Admin\CourseController::class, 'showBulkAssignLevel'])->name('courses.bulk-assign-level');
+    Route::post('/courses/bulk-assign-level', [App\Http\Controllers\Admin\CourseController::class, 'bulkAssignLevel'])->name('courses.bulk-assign-level');
     Route::resource('courses.lessons', App\Http\Controllers\Admin\LessonController::class);
+    
+    // Audio & Speaking routes for lessons
+    Route::get('/courses/{course}/lessons/{lesson}/audio-speaking', [App\Http\Controllers\Admin\Lesson\AudioSpeakingController::class, 'edit'])->name('courses.lessons.audio-speaking.edit');
+    Route::put('/courses/{course}/lessons/{lesson}/audio-speaking', [App\Http\Controllers\Admin\Lesson\AudioSpeakingController::class, 'update'])->name('courses.lessons.audio-speaking.update');
+    
     Route::resource('lessons.quizzes', App\Http\Controllers\Admin\QuizController::class);
     Route::resource('quizzes.questions', App\Http\Controllers\Admin\QuestionController::class);
     
@@ -76,6 +83,15 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/users/{user}/enable', [App\Http\Controllers\Admin\UserController::class, 'enable'])->name('users.enable');
     Route::post('/users/{user}/disable', [App\Http\Controllers\Admin\UserController::class, 'disable'])->name('users.disable');
     Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/level-progression', [App\Http\Controllers\Admin\LevelProgressionReportController::class, 'index'])->name('reports.level-progression');
+    Route::get('/user-level-tracking', [App\Http\Controllers\Admin\UserLevelTrackingController::class, 'index'])->name('user-level-tracking');
+    
+    // Placement Tests routes
+    Route::resource('placement-tests', App\Http\Controllers\Admin\PlacementTestController::class);
+    Route::post('/placement-tests/{placementTest}/import-questions', [App\Http\Controllers\Admin\PlacementTestController::class, 'importQuestions'])->name('placement-tests.import-questions');
+    Route::get('/placement-tests/download-template', [App\Http\Controllers\Admin\PlacementTestController::class, 'downloadTemplate'])->name('placement-tests.download-template');
+    Route::get('/placement-tests/reports', [App\Http\Controllers\Admin\PlacementTestController::class, 'reports'])->name('placement-tests.reports');
+    Route::resource('placement-tests.questions', App\Http\Controllers\Admin\PlacementTestQuestionController::class);
 });
 
 // Audio recording storage - accessible by all authenticated users
@@ -91,6 +107,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'updateProfileInformation'])->name('profile.update');
     Route::put('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
     Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Placement Tests routes for students
+    Route::get('/placement-tests', function () {
+        // Get the first active placement test or create a default one for testing
+        $placementTest = \App\Models\PlacementTest::where('is_active', true)->first();
+        if (!$placementTest) {
+            // Redirect to dashboard with error message if no active placement test
+            return redirect()->route('dashboard')->with('error', 'No active placement test available at the moment.');
+        }
+        return view('placement-tests.index', compact('placementTest'));
+    })->middleware(['auth', 'verified'])->name('placement-tests.index');
+    
+    Route::get('/placement-tests/{placementTest}', function (\App\Models\PlacementTest $placementTest) {
+        return view('placement-tests.show', compact('placementTest'));
+    })->name('placement-tests.show');
+    
+    Route::get('/placement-tests/{placementTest}/start', function (\App\Models\PlacementTest $placementTest) {
+        return view('placement-tests.start', compact('placementTest'));
+    })->name('placement-tests.start');
+    
+    Route::get('/placement-tests/attempts/{attempt}', function (\App\Models\PlacementTestAttempt $attempt) {
+        return view('placement-tests.result', compact('attempt'));
+    })->name('placement-tests.result');
 });
 
 require __DIR__.'/auth.php';

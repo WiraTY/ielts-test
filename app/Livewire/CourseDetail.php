@@ -15,6 +15,11 @@ class CourseDetail extends Component
 
     public function mount(Course $course)
     {
+        // Check if user is authorized to view this course based on their level
+        if (auth()->check() && !$this->canUserAccessCourse(auth()->user(), $course)) {
+            abort(403, 'You do not have access to this course level.');
+        }
+        
         // Check if user is authorized to view this course
         Gate::authorize('view', $course);
         
@@ -24,6 +29,25 @@ class CourseDetail extends Component
         if (auth()->check()) {
             $this->courseProgress = $course->getUserProgress(auth()->id());
         }
+    }
+    
+    /**
+     * Check if user can access the course based on their level
+     */
+    private function canUserAccessCourse($user, $course)
+    {
+        // Admins can access all courses
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        // Users who haven't taken placement test can access starter level courses
+        if (!$user->hasCompletedPlacementTest()) {
+            return $course->level === 'starter';
+        }
+        
+        // Check if course level is in user's unlocked levels or is their current level
+        return $user->hasAccessToLevel($course->level);
     }
 
     public function render()

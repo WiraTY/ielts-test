@@ -47,6 +47,10 @@ use Illuminate\Support\Facades\Auth;
                                     {{ __('Reports') }}
                                 </x-nav-link>
                                 
+                                <x-nav-link :href="route('admin.placement-tests.index')" :active="request()->routeIs('admin.placement-tests.*')">
+                                    {{ __('Placement Tests') }}
+                                </x-nav-link>
+                                
                                 <!-- View as Student -->
                                 <x-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.*') || request()->routeIs('lessons.*') || request()->routeIs('quizzes.*')">
                                     {{ __('View as Student') }}
@@ -112,6 +116,10 @@ use Illuminate\Support\Facades\Auth;
                         </x-responsive-nav-link>
                         <x-responsive-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">
                             {{ __('Reports') }}
+                        </x-responsive-nav-link>
+                        
+                        <x-responsive-nav-link :href="route('admin.placement-tests.index')" :active="request()->routeIs('admin.placement-tests.*')">
+                            {{ __('Placement Tests') }}
                         </x-responsive-nav-link>
                         
                         <!-- View as Student -->

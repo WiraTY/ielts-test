@@ -2,7 +2,13 @@
     <!-- Course Header with Progress -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
         <div class="p-6">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3">{{ $course->title }}</h1>
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-3">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">{{ $course->title }}</h1>
+                <!-- Level indicator -->
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    Level: {{ ucfirst($course->level) }}
+                </span>
+            </div>
             <p class="text-gray-600 mb-4">{{ $course->description }}</p>
             
             <!-- Course Details and Progress -->
