@@ -29,6 +29,10 @@ The Trial Class Application is a Laravel + Livewire platform designed for educat
 - Quiz taking with multiple question types (MCQ, multi-select, essay)
 - Progress tracking
 - Dashboard with statistics and recommendations
+- Placement test for level assessment
+- Level-based course access
+- Audio listening and speaking practice exercises
+- Speaking practice recording with playback
 
 ### For Administrators:
 - Course management (CRUD operations)
@@ -38,6 +42,10 @@ The Trial Class Application is a Laravel + Livewire platform designed for educat
 - Progress tracking and reporting
 - Content upload capabilities
 - Quick switching between admin and student views
+- Placement test management with Excel import
+- Level assignment and progression tracking
+- Bulk course level assignment
+- Detailed reporting and analytics
 
 ### Technical Features:
 - Responsive design with TailwindCSS
@@ -48,6 +56,8 @@ The Trial Class Application is a Laravel + Livewire platform designed for educat
 - Results calculation and display
 - View switching between admin and student perspectives
 - Course thumbnail management with recommended size 400px x 200px (2:1 ratio)
+- Audio and speaking practice functionality
+- Level-based course access control
 
 ## Technology Stack
 
@@ -104,6 +114,10 @@ database/
 - role (string) - 'admin', 'student'
 - avatar (string, nullable)
 - email_verified_at (timestamp, nullable)
+- has_taken_placement_test (boolean, default: false)
+- assigned_level (string, nullable) - starter, beginner, elementary, intermediate, advanced
+- current_level (string, nullable) - starter, beginner, elementary, intermediate, advanced
+- unlocked_levels (json, nullable) - array of levels unlocked by the user
 - created_at, updated_at (timestamps)
 
 ### Courses
@@ -113,8 +127,10 @@ database/
 - description (text, nullable)
 - thumbnail_path (string, nullable) - Stores path to thumbnail image. Recommended size: 400px x 200px (2:1 ratio) for optimal display in course listings.
 - is_trial (boolean, default: true)
+- level (string, default: 'starter') - starter, beginner, elementary, intermediate, advanced
 - created_by (foreign key to users.id)
 - published_at (timestamp, nullable)
+- order (integer, default: 0)
 - created_at, updated_at (timestamps)
 
 ### Lessons
@@ -174,6 +190,68 @@ database/
 - completed_at (timestamp, nullable)
 - created_at, updated_at (timestamps)
 
+### Placement Tests
+- id (bigint, primary)
+- title (string)
+- description (text, nullable)
+- duration_minutes (integer, nullable)
+- is_active (boolean, default: true)
+- level_mapping (json) - Maps score ranges to levels (e.g., {"0-20": "starter", "21-40": "beginner"})
+- created_at, updated_at (timestamps)
+
+### Placement Test Questions
+- id (bigint, primary)
+- placement_test_id (foreign key to placement_tests.id)
+- question_text (text)
+- options (json) - Array of options for multiple choice questions
+- correct_answer (string) - The correct option
+- score (integer, default: 1)
+- order (integer, default: 0)
+- created_at, updated_at (timestamps)
+
+### Placement Test Attempts
+- id (bigint, primary)
+- placement_test_id (foreign key to placement_tests.id)
+- user_id (foreign key to users.id)
+- started_at (timestamp, nullable)
+- finished_at (timestamp, nullable)
+- score (integer, nullable)
+- assigned_level (string, nullable) - The level assigned based on score
+- status (string) - 'in_progress', 'completed', 'timeout'
+- created_at, updated_at (timestamps)
+
+### Placement Test Answers
+- id (bigint, primary)
+- attempt_id (foreign key to placement_test_attempts.id)
+- question_id (foreign key to placement_test_questions.id)
+- selected_answer (string) - Student's selected option
+- is_correct (boolean, nullable)
+- score_awarded (integer, nullable)
+- created_at, updated_at (timestamps)
+
+### Lesson Audio
+- id (bigint, primary)
+- lesson_id (foreign key to lessons.id)
+- description (text, nullable)
+- audio_file_path (string, nullable)
+- enable (boolean, default: false)
+- created_at, updated_at (timestamps)
+
+### Lesson Speaking
+- id (bigint, primary)
+- lesson_id (foreign key to lessons.id)
+- description (text, nullable)
+- duration_seconds (integer, default: 60)
+- enable (boolean, default: false)
+- created_at, updated_at (timestamps)
+
+### Student Recordings
+- id (bigint, primary)
+- user_id (foreign key to users.id)
+- lesson_id (foreign key to lessons.id)
+- file_path (string)
+- created_at, updated_at (timestamps)
+
 ## Installation
 
 ### Prerequisites
@@ -228,19 +306,24 @@ database/
 
 ### For Students
 1. Register as a new user or login with existing credentials
-2. Browse courses from the course catalog
-3. Enroll in a trial course
-4. Access lessons to view content and videos
-5. Take quizzes after completing lessons
-6. View results and track progress on the dashboard
+2. Take the placement test to determine your English proficiency level
+3. Browse courses from the course catalog (filtered by your assigned level)
+4. Enroll in courses at your current level
+5. Access lessons to view content, videos, and complete audio/speaking practice
+6. Take quizzes after completing lessons
+7. View results and track progress on the dashboard
+8. Complete all courses at your current level to advance to the next level
 
 ### For Administrators
 1. Login with admin credentials
 2. Access the admin panel at `/admin/dashboard`
 3. Manage courses, lessons, quizzes, and questions using the CRUD interfaces
-4. Monitor student progress and quiz results
-5. Upload content and manage users
-6. Switch to student view using "View as Student" button to preview student experience
+4. Create and manage placement tests with Excel import functionality
+5. Monitor student progress and quiz results
+6. Upload content and manage users
+7. Assign levels to courses and users
+8. View detailed reports and analytics
+9. Switch to student view using "View as Student" button to preview student experience
 
 ### Default Credentials
 - Admin: 
@@ -259,14 +342,21 @@ Can perform all management functions:
 - Create and edit quizzes and questions
 - View student progress and results
 - Manage user accounts
+- Create and manage placement tests
+- Assign levels to courses and users
+- View detailed reports and analytics
 - Switch between admin and student views
 
 ### Student
 Can access learning content:
-- View enrolled courses
+- Take placement test to determine level
+- View courses at their assigned level
 - Access lessons and content
+- Complete audio listening and speaking practice exercises
 - Take quizzes
 - View personal progress and results
+- Record and playback speaking practice
+- Advance through levels by completing courses
 
 ### Guest
 Limited access:
@@ -275,21 +365,42 @@ Limited access:
 
 ## API Endpoints
 
-Currently, the application primarily uses Livewire for interactivity rather than a REST API. However, there are some backend endpoints for file uploads:
+Currently, the application primarily uses Livewire for interactivity rather than a REST API. However, there are some backend endpoints for file uploads and audio recording:
 
 ### Admin Endpoints
 - `POST /admin/questions/upload-image` - Upload images for quiz questions
 - `POST /admin/lessons/upload-image` - Upload images for lesson content
+- `POST /admin/placement-tests/{placementTest}/import-questions` - Import questions from Excel file
+- `GET /admin/placement-tests/download-template` - Download Excel template for question import
+- `GET /admin/courses/bulk-assign-level` - Show bulk course level assignment interface
+- `POST /admin/courses/bulk-assign-level` - Assign levels to multiple courses
+- `GET /admin/placement-tests/reports` - View placement test reports
+- `GET /admin/reports/level-progression` - View level progression reports
+- `GET /admin/user-level-tracking` - View user level tracking dashboard
+
+### Student Endpoints
+- `POST /audio/store` - Store audio recordings for speaking practice
+- `DELETE /audio/{recording}` - Delete audio recordings
+
+### Authentication Endpoints
+- Standard Laravel authentication routes are used for login, registration, password reset, etc.
+- `POST /audio/store` - Store audio recordings for speaking practice
+- `DELETE /audio/{recording}` - Delete audio recordings
+
+### Student Endpoints
+- `POST /audio/store` - Store audio recordings for speaking practice
 
 ## Livewire Components
 
 ### Frontend Components
-- `CourseList` - Displays list of available courses
+- `CourseList` - Displays list of available courses (filtered by user level)
 - `CourseDetail` - Shows course details and lessons
 - `LessonViewer` - Renders lesson content and tracks progress
 - `VideoPlayer` - Wrapper for video embedding
 - `QuizRunner` - Handles quiz taking with timer and navigation
 - `QuizResult` - Displays quiz results and feedback
+- `PlacementTestRunner` - Handles placement test taking with timer and navigation
+- `PlacementTestResult` - Displays placement test results and assigned level
 
 ### Admin Components
 - `Admin\CourseForm` - CRUD interface for courses
@@ -297,6 +408,8 @@ Currently, the application primarily uses Livewire for interactivity rather than
 - `Admin\QuizForm` - CRUD interface for quizzes and questions
 - `Admin\UserList` - User management interface
 - `Admin\ReportList` - Reporting interface
+- `Admin\PlacementTestForm` - CRUD interface for placement tests
+- `Admin\PlacementTestQuestionForm` - CRUD interface for placement test questions
 
 ## Development
 
@@ -321,20 +434,28 @@ resources/
 │   ├── courses/            # Course views
 │   ├── lessons/            # Lesson views
 │   ├── quizzes/            # Quiz views
+│   ├── placement-tests/    # Placement test views
 │   ├── layouts/            # Base layouts
 │   └── components/         # Reusable Blade components
 └── js/                     # JavaScript assets
 ```
 
 ### Key Models and Relationships
-- `User` - Can be admin or student
-- `Course` - Contains multiple lessons, created by a user
-- `Lesson` - Belongs to a course, can have one quiz
+- `User` - Can be admin or student, has levels and progress
+- `Course` - Contains multiple lessons, created by a user, assigned a level
+- `Lesson` - Belongs to a course, can have one quiz, audio, and speaking practice
 - `Quiz` - Belongs to a lesson, contains multiple questions
 - `Question` - Belongs to a quiz
 - `QuizAttempt` - Tracks a user's attempt at a quiz
 - `QuizAnswer` - Stores answers for a quiz attempt
 - `Progress` - Tracks user progress through lessons
+- `PlacementTest` - Contains multiple placement test questions
+- `PlacementTestQuestion` - Belongs to a placement test
+- `PlacementTestAttempt` - Tracks a user's attempt at a placement test
+- `PlacementTestAnswer` - Stores answers for a placement test attempt
+- `LessonAudio` - Belongs to a lesson, contains audio file information
+- `LessonSpeaking` - Belongs to a lesson, contains speaking practice information
+- `StudentRecording` - Tracks student audio recordings
 
 ### Creating New Features
 
@@ -650,3 +771,79 @@ These updates improve the user experience for administrators by allowing them to
 - Improved form validation and error handling
 
 These updates have significantly improved the admin user experience, making it easier to manage courses, lessons, quizzes, and questions while maintaining consistent navigation and interface design across the application.
+
+## Placement Test and Leveling System
+
+### Overview
+The Placement Test and Leveling System is a comprehensive feature that allows students to assess their English proficiency and access courses appropriate to their skill level. This system enhances the educational platform by providing personalized learning paths based on individual abilities.
+
+### Key Components
+
+#### 1. Placement Tests
+- **Purpose**: Assess student English proficiency to determine appropriate course levels
+- **Structure**: Multiple-choice questions with configurable scoring and time limits
+- **Management**: Admin interface for creating, editing, and managing placement tests
+- **Import**: Excel import functionality for bulk question management
+- **Scoring**: Automatic scoring with configurable level mapping based on score ranges
+
+#### 2. Leveling System
+- **Levels**: Five proficiency levels (Starter, Beginner, Elementary, Intermediate, Advanced)
+- **Assignment**: Automatic level assignment based on placement test scores
+- **Progression**: Automatic level progression after completing all courses at current level
+- **Access Control**: Students can only access courses at their current level or unlocked levels
+
+#### 3. Course Leveling
+- **Level Assignment**: Courses are assigned specific levels during creation
+- **Bulk Assignment**: Admin interface for assigning levels to multiple courses
+- **Access Filtering**: Course listings automatically filtered based on student's assigned level
+
+#### 4. Student Progression
+- **Level Tracking**: Dashboard displays current level and progress toward next level
+- **Completion Monitoring**: System tracks course completion to determine level advancement eligibility
+- **Automatic Advancement**: Students automatically progress to next level after completing all courses at current level
+
+### Implementation Details
+
+#### Database Schema Extensions
+- Added `level` column to `courses` table to store course level assignments
+- Extended `users` table with:
+  - `has_taken_placement_test` (boolean) - Tracks if student has completed placement test
+  - `assigned_level` (string) - Initial level assigned based on placement test
+  - `current_level` (string) - Student's current accessible level
+  - `unlocked_levels` (json) - Array of levels unlocked by student
+
+#### New Database Tables
+- `placement_tests` - Stores placement test definitions with level mapping
+- `placement_test_questions` - Contains questions for placement tests
+- `placement_test_attempts` - Tracks student attempts at placement tests
+- `placement_test_answers` - Stores student answers for placement test questions
+
+#### Core Functionality
+- **Level Assignment Service**: Algorithm to determine appropriate level based on test scores
+- **Progression Logic**: System to monitor course completion and automatically advance students
+- **Access Control**: Middleware to restrict course access based on student levels
+- **Reporting**: Comprehensive dashboards for admins to monitor student progress and placement test results
+
+### User Experience
+
+#### For Students
+- **Initial Assessment**: Prompt to take placement test upon first login
+- **Personalized Catalog**: Course catalog filtered to show only accessible courses
+- **Progress Tracking**: Dashboard showing current level, progress, and advancement requirements
+- **Level Advancement**: Automatic progression notification after completing level requirements
+
+#### For Administrators
+- **Test Management**: Interface to create, edit, and manage placement tests
+- **Question Import**: Excel import functionality for bulk question management
+- **Level Assignment**: Tools to assign levels to courses and students
+- **Progress Monitoring**: Dashboards to track student progression and placement test results
+- **Reporting**: Detailed analytics on placement test performance and level distribution
+
+### Benefits
+- **Personalized Learning**: Students access content appropriate to their skill level
+- **Structured Progression**: Clear pathway from beginner to advanced levels
+- **Efficient Resource Allocation**: Courses tailored to specific proficiency levels
+- **Enhanced Engagement**: Reduced frustration from overly difficult or simplistic content
+- **Measurable Progress**: Clear metrics for student advancement and institutional effectiveness
+
+This placement test and leveling system transforms the Trial Class Application from a generic course platform into a sophisticated, adaptive learning environment that grows with each student's abilities.
