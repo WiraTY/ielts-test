@@ -775,32 +775,46 @@ These updates have significantly improved the admin user experience, making it e
 ## Placement Test and Leveling System
 
 ### Overview
-The Placement Test and Leveling System is a comprehensive feature that allows students to assess their English proficiency and access courses appropriate to their skill level. This system enhances the educational platform by providing personalized learning paths based on individual abilities.
+The Placement Test and Leveling System is a comprehensive feature that allows students to assess their English proficiency and access courses appropriate to their skill level. This system enhances the educational platform by providing personalized learning paths based on individual abilities, utilizing the Pearson Global Scale of English (GSE) for accurate proficiency assessment.
+
+### Pearson Global Scale of English (GSE) Alignment
+The system implements the Pearson GSE scale for accurate English proficiency measurement:
+
+| Speakout Level | CEFR | GSE Range |
+|----------------|------|-----------|
+| Starter | A1–A1+ | 22 – 35 |
+| Elementary | A1+–A2 | 30 – 42 |
+| Pre-Intermediate | A2–B1- | 36 – 46 |
+| Intermediate | B1 | 46 – 58 |
+| Upper Intermediate | B2 | 57 – 67 |
+| Advanced | C1 | 66 – 78 |
+
+This alignment ensures accurate placement of students based on internationally recognized English proficiency standards.
 
 ### Key Components
 
 #### 1. Placement Tests
-- **Purpose**: Assess student English proficiency to determine appropriate course levels
+- **Purpose**: Assess student English proficiency to determine appropriate course levels using GSE-aligned scoring
 - **Structure**: Multiple-choice questions with configurable scoring and time limits
 - **Management**: Admin interface for creating, editing, and managing placement tests
 - **Import**: Excel import functionality for bulk question management
-- **Scoring**: Automatic scoring with configurable level mapping based on score ranges
+- **Scoring**: Automatic scoring with GSE-aligned level mapping based on score ranges
 
 #### 2. Leveling System
-- **Levels**: Five proficiency levels (Starter, Beginner, Elementary, Intermediate, Advanced)
-- **Assignment**: Automatic level assignment based on placement test scores
+- **Levels**: Six proficiency levels aligned with GSE (Starter, Elementary, Pre-Intermediate, Intermediate, Upper Intermediate, Advanced)
+- **Assignment**: Automatic level assignment based on GSE-aligned placement test scores
 - **Progression**: Automatic level progression after completing all courses at current level
 - **Access Control**: Students can only access courses at their current level or unlocked levels
 
 #### 3. Course Leveling
-- **Level Assignment**: Courses are assigned specific levels during creation
+- **Level Assignment**: Courses are assigned specific GSE-aligned levels during creation
 - **Bulk Assignment**: Admin interface for assigning levels to multiple courses
 - **Access Filtering**: Course listings automatically filtered based on student's assigned level
 
 #### 4. Student Progression
-- **Level Tracking**: Dashboard displays current level and progress toward next level
+- **Level Tracking**: Dashboard displays current GSE-aligned level and progress toward next level
 - **Completion Monitoring**: System tracks course completion to determine level advancement eligibility
-- **Automatic Advancement**: Students automatically progress to next level after completing all courses at current level
+- **Automatic Advancement**: Students automatically progress to next GSE level after completing all courses at current level
 
 ### Implementation Details
 
@@ -808,42 +822,43 @@ The Placement Test and Leveling System is a comprehensive feature that allows st
 - Added `level` column to `courses` table to store course level assignments
 - Extended `users` table with:
   - `has_taken_placement_test` (boolean) - Tracks if student has completed placement test
-  - `assigned_level` (string) - Initial level assigned based on placement test
+  - `assigned_level` (string) - Initial level assigned based on placement test aligned with GSE
   - `current_level` (string) - Student's current accessible level
   - `unlocked_levels` (json) - Array of levels unlocked by student
 
 #### New Database Tables
-- `placement_tests` - Stores placement test definitions with level mapping
+- `placement_tests` - Stores placement test definitions with GSE-aligned level mapping
 - `placement_test_questions` - Contains questions for placement tests
 - `placement_test_attempts` - Tracks student attempts at placement tests
 - `placement_test_answers` - Stores student answers for placement test questions
 
 #### Core Functionality
-- **Level Assignment Service**: Algorithm to determine appropriate level based on test scores
-- **Progression Logic**: System to monitor course completion and automatically advance students
+- **Level Assignment Service**: Algorithm to determine appropriate GSE-aligned level based on test scores
+- **Progression Logic**: System to monitor course completion and automatically advance students to next GSE level
 - **Access Control**: Middleware to restrict course access based on student levels
 - **Reporting**: Comprehensive dashboards for admins to monitor student progress and placement test results
 
 ### User Experience
 
 #### For Students
-- **Initial Assessment**: Prompt to take placement test upon first login
-- **Personalized Catalog**: Course catalog filtered to show only accessible courses
-- **Progress Tracking**: Dashboard showing current level, progress, and advancement requirements
-- **Level Advancement**: Automatic progression notification after completing level requirements
+- **Initial Assessment**: Prompt to take GSE-aligned placement test upon first login
+- **Personalized Catalog**: Course catalog filtered to show only accessible courses based on GSE level
+- **Progress Tracking**: Dashboard showing current GSE level, progress, and advancement requirements
+- **Level Advancement**: Automatic progression notification after completing level requirements aligned with GSE
 
 #### For Administrators
-- **Test Management**: Interface to create, edit, and manage placement tests
+- **Test Management**: Interface to create, edit, and manage GSE-aligned placement tests
 - **Question Import**: Excel import functionality for bulk question management
-- **Level Assignment**: Tools to assign levels to courses and students
+- **Level Assignment**: Tools to assign GSE-aligned levels to courses and students
 - **Progress Monitoring**: Dashboards to track student progression and placement test results
-- **Reporting**: Detailed analytics on placement test performance and level distribution
+- **Reporting**: Detailed analytics on placement test performance and GSE level distribution
 
 ### Benefits
-- **Personalized Learning**: Students access content appropriate to their skill level
-- **Structured Progression**: Clear pathway from beginner to advanced levels
-- **Efficient Resource Allocation**: Courses tailored to specific proficiency levels
+- **Personalized Learning**: Students access content appropriate to their GSE-aligned skill level
+- **Structured Progression**: Clear pathway from beginner to advanced levels using internationally recognized standards
+- **Efficient Resource Allocation**: Courses tailored to specific GSE proficiency levels
 - **Enhanced Engagement**: Reduced frustration from overly difficult or simplistic content
-- **Measurable Progress**: Clear metrics for student advancement and institutional effectiveness
+- **Measurable Progress**: Clear metrics for student advancement and institutional effectiveness using GSE benchmarks
+- **International Standards**: Alignment with Pearson's Global Scale of English for global recognition
 
-This placement test and leveling system transforms the Trial Class Application from a generic course platform into a sophisticated, adaptive learning environment that grows with each student's abilities.
+This placement test and leveling system transforms the Trial Class Application from a generic course platform into a sophisticated, adaptive learning environment that grows with each student's abilities, utilizing internationally recognized Pearson GSE standards for accurate proficiency assessment.
