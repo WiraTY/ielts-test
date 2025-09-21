@@ -15,14 +15,11 @@ class Lesson extends Model
         'title',
         'content',
         'video_url',
-        'audio_path',
-        'speaking_duration',
         'order'
     ];
 
     protected $casts = [
-        'order' => 'integer',
-        'speaking_duration' => 'integer'
+        'order' => 'integer'
     ];
 
     public function course(): BelongsTo
@@ -53,5 +50,15 @@ class Lesson extends Model
     public function progress()
     {
         return $this->hasOne(Progress::class);
+    }
+    
+    public function audio(): HasOne
+    {
+        return $this->hasOne(LessonAudio::class);
+    }
+    
+    public function speaking(): HasOne
+    {
+        return $this->hasOne(LessonSpeaking::class);
     }
 }

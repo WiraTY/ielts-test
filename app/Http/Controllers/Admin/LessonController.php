@@ -47,8 +47,6 @@ class LessonController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
             'video_url' => 'nullable|url',
-            'audio_file' => 'nullable|file|mimes:mp3,wav|max:5120', // 5MB max
-            'speaking_duration' => 'nullable|integer|min:1|max:300', // 5 minutes max
             'order' => 'nullable|integer|min:0',
             'status' => 'required|in:draft,published',
         ]);
@@ -59,19 +57,11 @@ class LessonController extends Controller
             $slug = $slug . '-' . ($count + 1);
         }
 
-        // Handle audio file upload
-        $audioPath = null;
-        if ($request->hasFile('audio_file')) {
-            $audioPath = $request->file('audio_file')->store('lesson-audio', 'public');
-        }
-
         $lesson = $course->lessons()->create([
             'slug' => $slug,
             'title' => $request->title,
             'content' => $request->content,
             'video_url' => $request->video_url,
-            'audio_path' => $audioPath,
-            'speaking_duration' => $request->speaking_duration,
             'order' => $request->order ?? 0,
             'published_at' => $request->status === 'published' ? now() : null,
         ]);
@@ -99,7 +89,7 @@ class LessonController extends Controller
         // Check if user is authorized to update this course (lessons belong to courses)
         Gate::authorize('update', $course);
         
-        $lesson->load('quiz.questions');
+        $lesson->load(['quiz.questions', 'audio', 'speaking']);
         return view('admin.lessons.edit', compact('course', 'lesson'));
     }
 
@@ -116,7 +106,11 @@ class LessonController extends Controller
             'content' => 'nullable|string',
             'video_url' => 'nullable|url',
             'audio_file' => 'nullable|file|mimes:mp3,wav|max:5120', // 5MB max
+            'audio_description' => 'nullable|string',
+            'audio_enabled' => 'nullable|boolean',
             'speaking_duration' => 'nullable|integer|min:1|max:300', // 5 minutes max
+            'speaking_description' => 'nullable|string',
+            'speaking_enabled' => 'nullable|boolean',
             'order' => 'nullable|integer|min:0',
             'status' => 'required|in:draft,published',
             // Quiz validation rules
@@ -134,25 +128,19 @@ class LessonController extends Controller
             $lesson->slug = $slug;
         }
 
-        // Handle audio file upload
-        if ($request->hasFile('audio_file')) {
-            // Delete old audio file if exists
-            if ($lesson->audio_path) {
-                Storage::disk('public')->delete($lesson->audio_path);
-            }
-            
-            $audioPath = $request->file('audio_file')->store('lesson-audio', 'public');
-            $lesson->audio_path = $audioPath;
-        }
-
         $lesson->update([
             'title' => $request->title,
             'content' => $request->content,
             'video_url' => $request->video_url,
-            'speaking_duration' => $request->speaking_duration,
             'order' => $request->order ?? 0,
             'published_at' => $request->status === 'published' ? now() : null,
         ]);
+
+        // Handle audio
+        $this->handleAudioUpdate($request, $lesson);
+        
+        // Handle speaking
+        $this->handleSpeakingUpdate($request, $lesson);
 
         // Handle quiz update or creation
         if ($request->filled('quiz_title')) {
@@ -174,6 +162,68 @@ class LessonController extends Controller
         }
 
         return redirect()->route('admin.courses.lessons.edit', [$course, $lesson])->with('success', 'Lesson and quiz updated successfully.');
+    }
+    
+    private function handleAudioUpdate(Request $request, Lesson $lesson)
+    {
+        if ($request->has('audio_enabled')) {
+            // Handle audio file upload
+            $audioPath = null;
+            if ($request->hasFile('audio_file')) {
+                // Delete old audio file if exists
+                if ($lesson->audio && $lesson->audio->audio_path) {
+                    Storage::disk('public')->delete($lesson->audio->audio_path);
+                }
+                
+                $audioPath = $request->file('audio_file')->store('lesson-audio', 'public');
+            } elseif ($lesson->audio) {
+                // Keep existing audio path
+                $audioPath = $lesson->audio->audio_path;
+            }
+
+            $lesson->audio()->updateOrCreate(
+                [],
+                [
+                    'is_enabled' => true,
+                    'audio_path' => $audioPath,
+                    'description' => $request->audio_description,
+                ]
+            );
+        } else {
+            // Disable audio or create disabled record
+            $lesson->audio()->updateOrCreate(
+                [],
+                [
+                    'is_enabled' => false,
+                    'audio_path' => null,
+                    'description' => null,
+                ]
+            );
+        }
+    }
+    
+    private function handleSpeakingUpdate(Request $request, Lesson $lesson)
+    {
+        if ($request->has('speaking_enabled')) {
+            $lesson->speaking()->updateOrCreate(
+                [],
+                [
+                    'is_enabled' => true,
+                    'duration' => $request->speaking_duration,
+                    'description' => $request->speaking_description,
+                ]
+            );
+        } else {
+            // Disable speaking or create disabled record
+            $lesson->speaking()->updateOrCreate(
+                [],
+                [
+                    'is_enabled' => false,
+                    'duration' => null,
+                    'description' => null,
+                ]
+            );
+        }
     }
 
     /**

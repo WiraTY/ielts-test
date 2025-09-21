@@ -450,6 +450,42 @@ For additional support:
 
 ## Recent Updates and Changes
 
+### September 21, 2025
+
+#### Audio and Speaking Practice Interface Enhancement
+- Implemented relational database structure for audio and speaking practice features with separate `lesson_audio` and `lesson_speaking` tables
+- Added dedicated models (`LessonAudio` and `LessonSpeaking`) with proper relationships to `Lesson` model
+- Created migration files to establish new table structure and remove deprecated fields from lessons table
+- Updated `LessonController` to handle audio and speaking practice as separate entities with dedicated methods (`handleAudioUpdate` and `handleSpeakingUpdate`)
+- Implemented tab-based interface in admin lesson edit form for better organization of audio and speaking practice settings
+- Added rich text editors (CKEditor) for audio and speaking practice instructions with full formatting capabilities
+- Reorganized student lesson view to display audio listening practice before speaking practice in the content flow
+- Enhanced form layout in admin panel with instructions on the left side and settings (file upload/duration) on the right side for improved UX
+- Added enable/disable checkboxes for both audio and speaking practice features to control visibility in student view
+- Implemented proper file handling and cleanup for audio files with automatic deletion of old files when replaced
+- Added comprehensive validation for audio files (MP3/WAV, 5MB max) and speaking duration (1-300 seconds)
+
+#### Database Structure Improvements
+- Created dedicated tables for audio and speaking practice with normalized structure:
+  - `lesson_audio`: Stores audio file paths, descriptions, and enable status
+  - `lesson_speaking`: Stores speaking duration, descriptions, and enable status
+- Removed deprecated fields from `lessons` table for cleaner database schema
+- Added proper foreign key constraints and indexing for optimal performance
+- Implemented explicit table naming in models to prevent Laravel pluralization issues
+
+#### User Interface Enhancements
+- Admin Panel:
+  - Tab-based navigation for lesson editing (Basic Info, Audio Listening, Speaking Practice, Quiz)
+  - Improved form organization with clear section headings and visual separation
+  - Responsive grid layout for better presentation on different screen sizes
+  - Enhanced checkbox controls with clear labeling for enabling/disabling features
+- Student View:
+  - Reordered content display sequence (Video → Content → Audio Listening → Speaking Practice)
+  - Conditional rendering of audio and speaking practice sections based on enable status
+  - Rich text formatting for instructions with consistent styling
+
+These updates provide a more modular and maintainable architecture for audio and speaking practice features while improving the user experience for both instructors and students. The relational structure allows for better scalability and data integrity, while the enhanced UI makes it easier to manage and access these features.
+
 ### September 19, 2025
 
 #### Speaking Practice Recording Enhancement

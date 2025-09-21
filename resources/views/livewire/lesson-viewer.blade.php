@@ -30,23 +30,33 @@
                 </div>
             @endif
             
-            <!-- Audio Player -->
-            @if($lesson->audio_path)
-                <div class="mb-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-2">Audio Listening</h2>
-                    <livewire:audio-player :lesson-id="$lesson->id" :audio-path="$lesson->audio_path" />
-                </div>
-            @endif
-            
             <div class="content-editor max-w-none mb-6">
                 {!! $lesson->content !!}
             </div>
             
+            <!-- Audio Player -->
+            @if($lesson->audio && $lesson->audio->is_enabled && $lesson->audio->audio_path)
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">Audio Listening</h2>
+                    @if($lesson->audio->description)
+                        <div class="content-editor max-w-none mb-4">
+                            {!! $lesson->audio->description !!}
+                        </div>
+                    @endif
+                    <livewire:audio-player :lesson-id="$lesson->id" :audio-path="$lesson->audio->audio_path" />
+                </div>
+            @endif
+            
             <!-- Speaking Practice -->
-            @if($lesson->speaking_duration)
+            @if($lesson->speaking && $lesson->speaking->is_enabled && $lesson->speaking->duration)
                 <div class="mb-6">
                     <h2 class="text-xl font-bold text-gray-800 mb-2">Speaking Practice</h2>
-                    <livewire:audio-recorder :lesson-id="$lesson->id" :duration="$lesson->speaking_duration" />
+                    @if($lesson->speaking->description)
+                        <div class="content-editor max-w-none mb-4">
+                            {!! $lesson->speaking->description !!}
+                        </div>
+                    @endif
+                    <livewire:audio-recorder :lesson-id="$lesson->id" :duration="$lesson->speaking->duration" />
                 </div>
             @endif
             
