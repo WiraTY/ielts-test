@@ -42,8 +42,8 @@
                                 </x-nav-link>
                                 
                                 @auth
-                                <!-- Placement Tests menu for students who haven't taken the test -->
-                                @if(auth()->user() && !auth()->user()->hasCompletedPlacementTest())
+                                <!-- Placement Tests menu - always visible for students -->
+                                @if(auth()->user() && !auth()->user()->isAdmin())
                                 <x-nav-link :href="route('placement-tests.index')" :active="request()->routeIs('placement-tests.*')">
                                     {{ __('Placement Test') }}
                                 </x-nav-link>
@@ -136,8 +136,8 @@
                         </x-responsive-nav-link>
                         
                         @auth
-                        <!-- Placement Tests menu for students who haven't taken the test -->
-                        @if(auth()->user() && !auth()->user()->hasCompletedPlacementTest())
+                        <!-- Placement Tests menu - always visible for students -->
+                        @if(auth()->user() && !auth()->user()->isAdmin())
                         <x-responsive-nav-link :href="route('placement-tests.index')" :active="request()->routeIs('placement-tests.*')">
                             {{ __('Placement Test') }}
                         </x-responsive-nav-link>

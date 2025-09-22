@@ -118,6 +118,39 @@
                         <button type="button" id="add-mapping" class="mt-2 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded">
                             Add Range
                         </button>
+                        
+                        <!-- Level Mapping Guide -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                            <h3 class="text-lg font-medium text-blue-800 mb-2">Pearson GSE Level Mapping Guide</h3>
+                            <p class="text-blue-700 mb-3">Use the Pearson Global Scale of English (GSE) for accurate level assignment:</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div class="bg-white p-3 rounded border">
+                                    <strong class="text-gray-900">Starter:</strong> 22-35 (CEFR: A1-A1+)<br>
+                                    <small class="text-gray-600">Beginner learners</small>
+                                </div>
+                                <div class="bg-white p-3 rounded border">
+                                    <strong class="text-gray-900">Elementary:</strong> 30-42 (CEFR: A1+-A2)<br>
+                                    <small class="text-gray-600">Basic learners</small>
+                                </div>
+                                <div class="bg-white p-3 rounded border">
+                                    <strong class="text-gray-900">Pre-Intermediate:</strong> 36-46 (CEFR: A2-B1-)<br>
+                                    <small class="text-gray-600">Lower intermediate</small>
+                                </div>
+                                <div class="bg-white p-3 rounded border">
+                                    <strong class="text-gray-900">Intermediate:</strong> 46-58 (CEFR: B1)<br>
+                                    <small class="text-gray-600">Mid-intermediate</small>
+                                </div>
+                                <div class="bg-white p-3 rounded border">
+                                    <strong class="text-gray-900">Upper Intermediate:</strong> 57-67 (CEFR: B2)<br>
+                                    <small class="text-gray-600">High intermediate</small>
+                                </div>
+                                <div class="bg-white p-3 rounded border">
+                                    <strong class="text-gray-900">Advanced:</strong> 66-78 (CEFR: C1)<br>
+                                    <small class="text-gray-600">Advanced learners</small>
+                                </div>
+                            </div>
+                            <p class="mt-3 text-sm text-blue-600">Note: Ranges can overlap to ensure proper level assignment. Use format like "22-35".</p>
+                        </div>
                     </div>
 
                     <!-- Questions Section -->

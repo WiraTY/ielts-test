@@ -13,17 +13,18 @@ class PlacementTestSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create a default placement test
+        // Create a default placement test using Pearson GSE scale
         PlacementTest::factory()->create([
             'title' => 'English Placement Test',
-            'description' => 'Assess your English proficiency level to determine the appropriate courses for you.',
+            'description' => 'Assess your English proficiency level using the Pearson Global Scale of English (GSE) to determine the appropriate courses for you.',
             'is_active' => true,
             'level_mapping' => [
-                "0-20" => "starter",
-                "21-40" => "beginner",
-                "41-60" => "elementary",
-                "61-80" => "intermediate",
-                "81-100" => "advanced"
+                "22-35" => "starter",              // GSE 22-35: Starter (A1-A1+)
+                "30-42" => "elementary",           // GSE 30-42: Elementary (A1+-A2)
+                "36-46" => "pre-intermediate",     // GSE 36-46: Pre-Intermediate (A2-B1-)
+                "46-58" => "intermediate",         // GSE 46-58: Intermediate (B1)
+                "57-67" => "upper-intermediate",   // GSE 57-67: Upper Intermediate (B2)
+                "66-78" => "advanced"              // GSE 66-78: Advanced (C1)
             ]
         ]);
     }

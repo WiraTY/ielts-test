@@ -38,18 +38,48 @@ class PlacementTestController extends Controller
             'description' => 'nullable|string',
             'duration_minutes' => 'nullable|integer|min:1|max:180',
             'is_active' => 'boolean',
+            'level_mapping' => 'nullable|array',
         ]);
+
+        // Process level mapping with GSE scale
+        $levelMapping = [];
+        if ($request->has('level_mapping')) {
+            foreach ($request->level_mapping as $mapping) {
+                if (!empty($mapping['range']) && !empty($mapping['level'])) {
+                    // Validate range format (e.g., "22-35")
+                    if (preg_match('/^\d+-\d+$/', $mapping['range'])) {
+                        // Validate level is one of the valid GSE levels
+                        $validLevels = ['starter', 'elementary', 'pre-intermediate', 'intermediate', 'upper-intermediate', 'advanced'];
+                        if (in_array($mapping['level'], $validLevels)) {
+                            $levelMapping[$mapping['range']] = $mapping['level'];
+                        }
+                    }
+                }
+            }
+        }
+
+        // If no level mapping provided, use default GSE scale
+        if (empty($levelMapping)) {
+            $levelMapping = [
+                "22-35" => "starter",              // GSE 22-35: Starter (A1-A1+)
+                "30-42" => "elementary",           // GSE 30-42: Elementary (A1+-A2)
+                "36-46" => "pre-intermediate",     // GSE 36-46: Pre-Intermediate (A2-B1-)
+                "46-58" => "intermediate",         // GSE 46-58: Intermediate (B1)
+                "57-67" => "upper-intermediate",   // GSE 57-67: Upper Intermediate (B2)
+                "66-78" => "advanced"              // GSE 66-78: Advanced (C1)
+            ];
+        }
 
         $placementTest = PlacementTest::create([
             'title' => $request->title,
             'description' => $request->description,
             'duration_minutes' => $request->duration_minutes,
             'is_active' => $request->has('is_active'),
-            'level_mapping' => [], // Will be updated when editing
+            'level_mapping' => $levelMapping,
         ]);
 
         return redirect()->route('admin.placement-tests.edit', $placementTest)
-            ->with('success', 'Placement test created successfully.');
+            ->with('success', 'Placement test created successfully with GSE scale level mapping.');
     }
 
     /**
@@ -89,14 +119,33 @@ class PlacementTestController extends Controller
             'level_mapping' => 'nullable|array',
         ]);
 
-        // Process level mapping
+        // Process level mapping with GSE scale
         $levelMapping = [];
         if ($request->has('level_mapping')) {
             foreach ($request->level_mapping as $mapping) {
                 if (!empty($mapping['range']) && !empty($mapping['level'])) {
-                    $levelMapping[$mapping['range']] = $mapping['level'];
+                    // Validate range format (e.g., "22-35")
+                    if (preg_match('/^\d+-\d+$/', $mapping['range'])) {
+                        // Validate level is one of the valid GSE levels
+                        $validLevels = ['starter', 'elementary', 'pre-intermediate', 'intermediate', 'upper-intermediate', 'advanced'];
+                        if (in_array($mapping['level'], $validLevels)) {
+                            $levelMapping[$mapping['range']] = $mapping['level'];
+                        }
+                    }
                 }
             }
+        }
+
+        // If no level mapping provided, use default GSE scale
+        if (empty($levelMapping)) {
+            $levelMapping = [
+                "22-35" => "starter",              // GSE 22-35: Starter (A1-A1+)
+                "30-42" => "elementary",           // GSE 30-42: Elementary (A1+-A2)
+                "36-46" => "pre-intermediate",     // GSE 36-46: Pre-Intermediate (A2-B1-)
+                "46-58" => "intermediate",         // GSE 46-58: Intermediate (B1)
+                "57-67" => "upper-intermediate",   // GSE 57-67: Upper Intermediate (B2)
+                "66-78" => "advanced"              // GSE 66-78: Advanced (C1)
+            ];
         }
 
         $placementTest->update([
@@ -107,8 +156,8 @@ class PlacementTestController extends Controller
             'level_mapping' => $levelMapping,
         ]);
 
-        return redirect()->route('admin.placement-tests.edit', $placementTest)
-            ->with('success', 'Placement test updated successfully.');
+        return redirect()->back()
+            ->with('success', 'Placement test updated successfully with GSE scale level mapping.');
     }
 
     /**

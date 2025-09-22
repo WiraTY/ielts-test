@@ -20,7 +20,8 @@ class PlacementTest extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
-        'level_mapping' => 'array'
+        'level_mapping' => 'array',
+        'duration_minutes' => 'integer'
     ];
 
     public function questions(): HasMany
@@ -31,5 +32,20 @@ class PlacementTest extends Model
     public function attempts(): HasMany
     {
         return $this->hasMany(PlacementTestAttempt::class);
+    }
+    
+    /**
+     * Get the valid levels for this placement test based on GSE scale
+     */
+    public function getValidLevels(): array
+    {
+        return [
+            'starter',
+            'elementary', 
+            'pre-intermediate',
+            'intermediate',
+            'upper-intermediate',
+            'advanced'
+        ];
     }
 }

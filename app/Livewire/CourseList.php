@@ -13,8 +13,13 @@ class CourseList extends Component
         $query = Course::where('is_trial', true)
             ->whereNotNull('published_at')
             ->orderBy('order');
-            
-        // If user is authenticated, filter courses by their unlocked levels
+        
+        // Eager load lessons count
+        $query->withCount('lessons');
+        
+        $courses = $query->get();
+
+        // If user is authenticated, mark which courses are accessible
         if (auth()->check()) {
             $user = auth()->user();
             $unlockedLevels = $user->unlocked_levels ?? [];
@@ -23,17 +28,21 @@ class CourseList extends Component
             // Include courses from current level and unlocked levels
             $allowedLevels = array_unique(array_merge($unlockedLevels, [$currentLevel]));
             
-            $query->whereIn('level', $allowedLevels);
-        }
-        
-        $courses = $query->get();
-
-        // Calculate progress for each course if user is authenticated
-        if (auth()->check()) {
             foreach ($courses as $course) {
-                $progress = $course->getUserProgress(auth()->id());
-                $course->is_completed = $progress['is_completed'];
-                $course->progress_percentage = $progress['percentage'];
+                // Check if course is accessible
+                $course->is_accessible = in_array($course->level, $allowedLevels);
+                
+                // Calculate progress for accessible courses
+                if ($course->is_accessible) {
+                    $progress = $course->getUserProgress(auth()->id());
+                    $course->is_completed = $progress['is_completed'];
+                    $course->progress_percentage = $progress['percentage'];
+                }
+            }
+        } else {
+            // For guests, mark all courses as accessible (but they'll need to login to access)
+            foreach ($courses as $course) {
+                $course->is_accessible = true;
             }
         }
 

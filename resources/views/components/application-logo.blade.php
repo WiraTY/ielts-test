@@ -1,1 +1,2 @@
-<img src="{{ asset('images/logo-kampung-inggris-pare-interpeace.svg') }}" {{ $attributes->merge(['class' => 'block h-9 w-auto']) }} alt="logo-kampung-inggris-pare-interpeace">
+<!-- <img src="{{ asset('images/logo-kampung-inggris-pare-interpeace.svg') }}" {{ $attributes->merge(['class' => 'block h-9 w-auto']) }} alt="logo-kampung-inggris-pare-interpeace"> -->
+ <img src="{{ asset('') }}" {{ $attributes->merge(['class' => 'block h-9 w-auto']) }} alt="">
