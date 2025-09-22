@@ -48,6 +48,25 @@
                 @endauth
             </div>
             
+            <!-- Lock indicator for inaccessible courses -->
+            @if(isset($isCourseAccessible) && !$isCourseAccessible)
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-yellow-800">Course Locked</h3>
+                        <div class="mt-2 text-sm text-yellow-700">
+                            <p>This course is locked. Complete previous courses or take the placement test to unlock this content.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+            
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-gray-100">
                 <div class="flex items-center gap-3">
                     @auth
@@ -61,9 +80,15 @@
                 
                 <div class="flex-shrink-0">
                     @auth
-                        <button wire:click="enroll" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg">
-                            Enroll Now
-                        </button>
+                        @if(isset($isCourseAccessible) && !$isCourseAccessible)
+                            <button disabled class="bg-gray-300 text-gray-500 font-medium py-2 px-4 rounded-lg cursor-not-allowed">
+                                Enroll Now (Locked)
+                            </button>
+                        @else
+                            <button wire:click="enroll" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg">
+                                Enroll Now
+                            </button>
+                        @endif
                     @else
                         <a href="{{ route('login') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg">
                             Login to Enroll
@@ -114,14 +139,20 @@
                                     </div>
                                 </div>
                                 
-                                <a href="{{ route('lessons.show', [$course->slug, $lesson->slug]) }}" 
-                                   class="ml-4 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-1.5 px-4 rounded-lg">
-                                    @if(isset($progress[$lesson->id]) && $progress[$lesson->id]->status === 'completed')
-                                        Review
-                                    @else
-                                        Start
-                                    @endif
-                                </a>
+                                @if(isset($isCourseAccessible) && !$isCourseAccessible)
+                                    <span class="ml-4 bg-gray-300 text-gray-500 text-sm font-medium py-1.5 px-4 rounded-lg cursor-not-allowed">
+                                        Locked
+                                    </span>
+                                @else
+                                    <a href="{{ route('lessons.show', [$course->slug, $lesson->slug]) }}" 
+                                       class="ml-4 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-1.5 px-4 rounded-lg">
+                                        @if(isset($progress[$lesson->id]) && $progress[$lesson->id]->status === 'completed')
+                                            Review
+                                        @else
+                                            Start
+                                        @endif
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     @endforeach

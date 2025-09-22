@@ -27,20 +27,57 @@ Route::get('/courses', function () {
 })->name('courses.index');
 
 Route::get('/courses/{course:slug}', function (App\Models\Course $course) {
+    // Check if user is authenticated
+    if (auth()->check()) {
+        // For authenticated users, we still show the course but indicate if it's locked
+        // The actual lesson access will be blocked in the lessons route
+    } else {
+        // For guest users, only allow access to starter level courses
+        if ($course->level !== 'starter') {
+            // Redirect to login with message
+            return redirect()->route('login')->with('error', 'Please log in to access this course.');
+        }
+    }
+    
     return view('courses.show', compact('course'));
 })->name('courses.show');
 
 Route::get('/lessons/{course:slug}/{lesson:slug}', function (App\Models\Course $course, App\Models\Lesson $lesson) {
+    // Verify that the lesson belongs to the course
+    if ($lesson->course_id !== $course->id) {
+        abort(404);
+    }
+    
+    // Check if user has access to this course level
+    if (auth()->check() && !auth()->user()->hasAccessToLevel($course->level)) {
+        return redirect()->route('courses.show', $course->slug)->with('error', 'You do not have access to this course level. Complete previous courses to unlock this content.');
+    }
+    
     return view('lessons.show', compact('course', 'lesson'));
 })->middleware(['auth', 'verified'])
   ->name('lessons.show');
 
 Route::get('/quizzes/{quiz}/start', function (App\Models\Quiz $quiz) {
+    // Check if user has access to this quiz's course level
+    if (!auth()->user()->hasAccessToLevel($quiz->lesson->course->level)) {
+        return redirect()->route('dashboard')->with('error', 'You do not have access to this course level.');
+    }
+    
     return view('quizzes.start', compact('quiz'));
 })->middleware(['auth', 'verified'])
   ->name('quizzes.start');
 
 Route::get('/quizzes/attempts/{attempt}', function (App\Models\QuizAttempt $attempt) {
+    // Check if the attempt belongs to the authenticated user
+    if ($attempt->user_id !== auth()->id()) {
+        abort(403);
+    }
+    
+    // Check if user has access to this attempt's course level
+    if (!auth()->user()->hasAccessToLevel($attempt->quiz->lesson->course->level)) {
+        return redirect()->route('dashboard')->with('error', 'You do not have access to this course level.');
+    }
+    
     return view('quizzes.result', compact('attempt'));
 })->middleware(['auth', 'verified'])
   ->name('quizzes.result');

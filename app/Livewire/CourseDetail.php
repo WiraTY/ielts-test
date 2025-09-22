@@ -12,12 +12,14 @@ class CourseDetail extends Component
 {
     public Course $course;
     public $courseProgress;
+    public $isCourseAccessible = true;
 
     public function mount(Course $course)
     {
         // Check if user is authorized to view this course based on their level
         if (auth()->check() && !$this->canUserAccessCourse(auth()->user(), $course)) {
-            abort(403, 'You do not have access to this course level.');
+            // Instead of aborting, we'll mark the course as inaccessible
+            $this->isCourseAccessible = false;
         }
         
         // Check if user is authorized to view this course
@@ -71,6 +73,12 @@ class CourseDetail extends Component
     {
         // Check if user is authorized to view this course
         Gate::authorize('view', $this->course);
+        
+        // Check if course is accessible
+        if (!$this->isCourseAccessible) {
+            session()->flash('error', 'You do not have access to this course level. Complete previous courses to unlock this content.');
+            return;
+        }
         
         // Get the first lesson of the course
         $firstLesson = $this->course->lessons()->orderBy('order')->first();
