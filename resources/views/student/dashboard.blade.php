@@ -1,11 +1,18 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Home') }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Dashboard') }}
+            </h2>
+            @auth
+            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                Level: {{ ucfirst(Auth::user()->getCurrentLevel()) }}
+            </div>
+            @endauth
+        </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Breadcrumb -->
             <x-breadcrumb :breadcrumbs="[
@@ -107,33 +114,25 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Course Aktif</h3>
-                        @if(is_array($coursesWithProgress) && count($coursesWithProgress) > 0)
+                        @if(count($coursesWithProgress) > 0)
                             <div class="space-y-4">
                                 @foreach($coursesWithProgress as $courseData)
                                     <div class="border border-gray-200 rounded-lg p-4">
                                         <div class="flex items-center justify-between mb-2">
                                             <h4 class="text-md font-medium text-gray-800">
-                                                @if(is_array($courseData) && isset($courseData['course']))
-                                                    <a href="{{ route('courses.show', $courseData['course']->slug ?? '#') }}" class="hover:text-blue-600">
-                                                        {{ $courseData['course']->title ?? 'Untitled Course' }}
-                                                    </a>
-                                                @elseif(is_object($courseData) && isset($courseData->course))
-                                                    <a href="{{ route('courses.show', $courseData->course->slug ?? '#') }}" class="hover:text-blue-600">
-                                                        {{ $courseData->course->title ?? 'Untitled Course' }}
-                                                    </a>
-                                                @else
-                                                    <span>Course information not available</span>
-                                                @endif
+                                                <a href="{{ route('courses.show', $courseData['course']->slug) }}" class="hover:text-blue-600">
+                                                    {{ $courseData['course']->title }}
+                                                </a>
                                             </h4>
                                             <span class="text-sm font-medium text-gray-600">
-                                                {{ is_array($courseData) ? ($courseData['completed_lessons'] ?? 0) : (is_object($courseData) ? ($courseData->completed_lessons ?? 0) : 0) }}/{{ is_array($courseData) ? ($courseData['total_lessons'] ?? 0) : (is_object($courseData) ? ($courseData->total_lessons ?? 0) : 0) }} lessons
+                                                {{ $courseData['completed_lessons'] }}/{{ $courseData['total_lessons'] }} lessons
                                             </span>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-2">
-                                            <div class="bg-blue-600 h-2 rounded-full" style="width: {{ is_array($courseData) ? ($courseData['progress_percentage'] ?? 0) : (is_object($courseData) ? ($courseData->progress_percentage ?? 0) : 0) }}%"></div>
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: {{ $courseData['progress_percentage'] }}%"></div>
                                         </div>
                                         <div class="mt-1 text-sm text-gray-500">
-                                            {{ is_array($courseData) ? ($courseData['progress_percentage'] ?? 0) : (is_object($courseData) ? ($courseData->progress_percentage ?? 0) : 0) }}% completed
+                                            {{ $courseData['progress_percentage'] }}% completed
                                         </div>
                                     </div>
                                 @endforeach
@@ -165,10 +164,10 @@
                                     <div class="border border-gray-200 rounded-lg p-4">
                                         <div class="flex items-center justify-between">
                                             <div>
-                                                <h4 class="text-md font-medium text-gray-800">{{ $lesson->title ?? 'Untitled Lesson' }}</h4>
-                                                <p class="text-sm text-gray-500">{{ $lesson->course->title ?? 'Untitled Course' }}</p>
+                                                <h4 class="text-md font-medium text-gray-800">{{ $lesson->title }}</h4>
+                                                <p class="text-sm text-gray-500">{{ $lesson->course->title }}</p>
                                             </div>
-                                            <a href="{{ route('lessons.show', [$lesson->course->slug ?? '#', $lesson->slug ?? '#']) }}" class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                            <a href="{{ route('lessons.show', [$lesson->course->slug, $lesson->slug]) }}" class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                                 Continue
                                             </a>
                                         </div>
@@ -200,12 +199,12 @@
                                     <div class="border border-gray-200 rounded-lg p-3">
                                         <div class="flex items-center justify-between">
                                             <div>
-                                                <h4 class="text-md font-medium text-gray-800">{{ $attempt->quiz->title ?? 'Untitled Quiz' }}</h4>
-                                                <p class="text-xs text-gray-500">{{ $attempt->quiz->lesson->course->title ?? 'Untitled Course' }} - {{ $attempt->quiz->lesson->title ?? 'Untitled Lesson' }}</p>
+                                                <h4 class="text-md font-medium text-gray-800">{{ $attempt->quiz->title }}</h4>
+                                                <p class="text-xs text-gray-500">{{ $attempt->quiz->lesson->course->title }} - {{ $attempt->quiz->lesson->title }}</p>
                                             </div>
                                             <div class="flex items-center">
-                                                <span class="mr-2 text-xs font-medium {{ ($attempt->score ?? 0) >= ($attempt->quiz->pass_score ?? 0) ? 'text-green-600' : 'text-red-600' }}">
-                                                    {{ $attempt->score ?? 0 }}%
+                                                <span class="mr-2 text-xs font-medium {{ $attempt->score >= $attempt->quiz->pass_score ? 'text-green-600' : 'text-red-600' }}">
+                                                    {{ $attempt->score }}%
                                                 </span>
                                                 <a href="{{ route('quizzes.result', $attempt) }}" class="inline-flex items-center px-2 py-1 border border-transparent text-xs leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                                     View Result
@@ -237,14 +236,14 @@
                                     <div class="border border-gray-200 rounded-lg p-3">
                                         <div class="flex items-center justify-between">
                                             <div>
-                                                <h4 class="text-md font-medium text-gray-800">{{ $recording->lesson->title ?? 'Untitled Lesson' }}</h4>
-                                                <p class="text-xs text-gray-500">{{ $recording->lesson->course->title ?? 'Untitled Course' }}</p>
+                                                <h4 class="text-md font-medium text-gray-800">{{ $recording->lesson->title }}</h4>
+                                                <p class="text-xs text-gray-500">{{ $recording->lesson->course->title }}</p>
                                             </div>
                                             <div class="flex items-center">
                                                 <span class="mr-2 text-xs text-gray-500">
-                                                    {{ $recording->created_at ? $recording->created_at->format('M d, Y') : 'Unknown Date' }}
+                                                    {{ $recording->created_at->format('M d, Y') }}
                                                 </span>
-                                                <a href="{{ asset('storage/' . ($recording->file_path ?? '')) }}" target="_blank" class="inline-flex items-center px-2 py-1 border border-transparent text-xs leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                                <a href="{{ asset('storage/' . $recording->file_path) }}" target="_blank" class="inline-flex items-center px-2 py-1 border border-transparent text-xs leading-4 font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                                     Play
                                                 </a>
                                             </div>
