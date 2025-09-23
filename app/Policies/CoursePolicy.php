@@ -21,7 +21,7 @@ class CoursePolicy
 
     /**
      * Determine whether the user can view the model.
-     * Students can only view trial courses.
+     * Students can only view trial courses at their level.
      * Admins can view all courses.
      * Guests can view trial courses.
      */
@@ -33,7 +33,22 @@ class CoursePolicy
         }
 
         // Students and guests can only view trial courses
-        return $course->is_trial;
+        if (!$course->is_trial) {
+            return false;
+        }
+
+        // Guests can only view starter level courses
+        if (!$user) {
+            return $course->level === 'starter';
+        }
+
+        // For students who haven't taken placement test, only starter courses are accessible
+        if (!$user->hasCompletedPlacementTest()) {
+            return $course->level === 'starter';
+        }
+
+        // Check if course level is in user's unlocked levels or is their current level
+        return $user->hasAccessToLevel($course->level);
     }
 
     /**

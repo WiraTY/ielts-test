@@ -16,14 +16,14 @@ class CourseDetail extends Component
 
     public function mount(Course $course)
     {
-        // Check if user is authorized to view this course based on their level
-        if (auth()->check() && !$this->canUserAccessCourse(auth()->user(), $course)) {
-            // Instead of aborting, we'll mark the course as inaccessible
-            $this->isCourseAccessible = false;
-        }
-        
         // Check if user is authorized to view this course
         Gate::authorize('view', $course);
+        
+        // Check if user can access this course based on their level (for UI purposes)
+        $this->isCourseAccessible = true;
+        if (auth()->check() && !$this->canUserAccessCourse(auth()->user(), $course)) {
+            $this->isCourseAccessible = false;
+        }
         
         $this->course = $course;
         

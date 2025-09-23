@@ -132,4 +132,12 @@ class User extends Authenticatable
         
         return true;
     }
+    
+    /**
+     * Get unlocked level names as an array
+     */
+    public function getUnlockedLevelNames(): array
+    {
+        return $this->unlocked_levels ?? [];
+    }
 }

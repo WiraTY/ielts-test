@@ -43,6 +43,9 @@ use Illuminate\Support\Facades\Auth;
                                 <x-nav-link :href="route('admin.courses.index')" :active="request()->routeIs('admin.courses.*')">
                                     {{ __('Courses') }}
                                 </x-nav-link>
+                                <x-nav-link :href="route('admin.levels.index')" :active="request()->routeIs('admin.levels.*')">
+                                    {{ __('Levels') }}
+                                </x-nav-link>
                                 <x-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">
                                     {{ __('Reports') }}
                                 </x-nav-link>
@@ -113,6 +116,9 @@ use Illuminate\Support\Facades\Auth;
                         </x-responsive-nav-link>
                         <x-responsive-nav-link :href="route('admin.courses.index')" :active="request()->routeIs('admin.courses.*')">
                             {{ __('Courses') }}
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('admin.levels.index')" :active="request()->routeIs('admin.levels.*')">
+                            {{ __('Levels') }}
                         </x-responsive-nav-link>
                         <x-responsive-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">
                             {{ __('Reports') }}

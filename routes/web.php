@@ -5,6 +5,7 @@ use App\Livewire\CourseDetail;
 use App\Livewire\LessonViewer;
 use App\Livewire\QuizRunner;
 use App\Livewire\QuizResult;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Student\RecordingController;
 use App\Http\Controllers\Admin\AudioController;
@@ -14,16 +15,19 @@ Route::get('/', function () {
 });
 
 Route::get('/courses', function () {
-    $courses = \App\Models\Course::where('is_trial', true)
+    // Get all trial courses that are published
+    $query = \App\Models\Course::where('is_trial', true)
         ->whereNotNull('published_at')
-        ->get();
+        ->orderBy('order');
+    
+    $courses = $query->get();
     
     // Jika hanya ada satu course trial, arahkan langsung ke course tersebut
     if ($courses->count() == 1) {
         return redirect()->route('courses.show', $courses->first()->slug);
     }
     
-    return view('courses.index');
+    return view('courses.index', compact('courses'));
 })->name('courses.index');
 
 Route::get('/courses/{course:slug}', function (App\Models\Course $course) {
@@ -117,8 +121,14 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     
     // User management
     Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [App\Http\Controllers\Admin\UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}/edit', [App\Http\Controllers\Admin\UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
     Route::post('/users/{user}/enable', [App\Http\Controllers\Admin\UserController::class, 'enable'])->name('users.enable');
     Route::post('/users/{user}/disable', [App\Http\Controllers\Admin\UserController::class, 'disable'])->name('users.disable');
+    Route::post('/users/{user}/reset-placement-test', [App\Http\Controllers\Admin\UserController::class, 'resetPlacementTest'])->name('users.reset-placement-test');
+    Route::post('/users/{user}/reset-password', [App\Http\Controllers\Admin\UserController::class, 'resetPassword'])->name('users.reset-password');
     Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/level-progression', [App\Http\Controllers\Admin\LevelProgressionReportController::class, 'index'])->name('reports.level-progression');
     Route::get('/user-level-tracking', [App\Http\Controllers\Admin\UserLevelTrackingController::class, 'index'])->name('user-level-tracking');
@@ -129,6 +139,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/placement-tests/download-template', [App\Http\Controllers\Admin\PlacementTestController::class, 'downloadTemplate'])->name('placement-tests.download-template');
     Route::get('/placement-tests/reports', [App\Http\Controllers\Admin\PlacementTestController::class, 'reports'])->name('placement-tests.reports');
     Route::resource('placement-tests.questions', App\Http\Controllers\Admin\PlacementTestQuestionController::class);
+    
+    // Level management routes
+    Route::resource('levels', App\Http\Controllers\Admin\LevelController::class);
 });
 
 // Audio recording storage - accessible by all authenticated users

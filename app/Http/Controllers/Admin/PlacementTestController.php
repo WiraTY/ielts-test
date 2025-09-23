@@ -25,7 +25,8 @@ class PlacementTestController extends Controller
      */
     public function create()
     {
-        return view('admin.placement-tests.create');
+        $levels = \App\Models\Level::active()->ordered()->get();
+        return view('admin.placement-tests.create', compact('levels'));
     }
 
     /**
@@ -48,9 +49,9 @@ class PlacementTestController extends Controller
                 if (!empty($mapping['range']) && !empty($mapping['level'])) {
                     // Validate range format (e.g., "22-35")
                     if (preg_match('/^\d+-\d+$/', $mapping['range'])) {
-                        // Validate level is one of the valid GSE levels
-                        $validLevels = ['starter', 'elementary', 'pre-intermediate', 'intermediate', 'upper-intermediate', 'advanced'];
-                        if (in_array($mapping['level'], $validLevels)) {
+                        // Validate level exists in database
+                        $level = \App\Models\Level::where('name', $mapping['level'])->first();
+                        if ($level) {
                             $levelMapping[$mapping['range']] = $mapping['level'];
                         }
                     }
@@ -60,14 +61,19 @@ class PlacementTestController extends Controller
 
         // If no level mapping provided, use default GSE scale
         if (empty($levelMapping)) {
-            $levelMapping = [
-                "22-35" => "starter",              // GSE 22-35: Starter (A1-A1+)
-                "30-42" => "elementary",           // GSE 30-42: Elementary (A1+-A2)
-                "36-46" => "pre-intermediate",     // GSE 36-46: Pre-Intermediate (A2-B1-)
-                "46-58" => "intermediate",         // GSE 46-58: Intermediate (B1)
-                "57-67" => "upper-intermediate",   // GSE 57-67: Upper Intermediate (B2)
-                "66-78" => "advanced"              // GSE 66-78: Advanced (C1)
-            ];
+            $starter = \App\Models\Level::where('name', 'starter')->first();
+            $elementary = \App\Models\Level::where('name', 'elementary')->first();
+            $preIntermediate = \App\Models\Level::where('name', 'pre-intermediate')->first();
+            $intermediate = \App\Models\Level::where('name', 'intermediate')->first();
+            $upperIntermediate = \App\Models\Level::where('name', 'upper-intermediate')->first();
+            $advanced = \App\Models\Level::where('name', 'advanced')->first();
+
+            if ($starter) $levelMapping["22-35"] = "starter";
+            if ($elementary) $levelMapping["30-42"] = "elementary";
+            if ($preIntermediate) $levelMapping["36-46"] = "pre-intermediate";
+            if ($intermediate) $levelMapping["46-58"] = "intermediate";
+            if ($upperIntermediate) $levelMapping["57-67"] = "upper-intermediate";
+            if ($advanced) $levelMapping["66-78"] = "advanced";
         }
 
         $placementTest = PlacementTest::create([
@@ -103,7 +109,9 @@ class PlacementTestController extends Controller
             $query->orderBy('order');
         }]);
         
-        return view('admin.placement-tests.edit', compact('placementTest'));
+        $levels = \App\Models\Level::active()->ordered()->get();
+        
+        return view('admin.placement-tests.edit', compact('placementTest', 'levels'));
     }
 
     /**
@@ -126,9 +134,9 @@ class PlacementTestController extends Controller
                 if (!empty($mapping['range']) && !empty($mapping['level'])) {
                     // Validate range format (e.g., "22-35")
                     if (preg_match('/^\d+-\d+$/', $mapping['range'])) {
-                        // Validate level is one of the valid GSE levels
-                        $validLevels = ['starter', 'elementary', 'pre-intermediate', 'intermediate', 'upper-intermediate', 'advanced'];
-                        if (in_array($mapping['level'], $validLevels)) {
+                        // Validate level exists in database
+                        $level = \App\Models\Level::where('name', $mapping['level'])->first();
+                        if ($level) {
                             $levelMapping[$mapping['range']] = $mapping['level'];
                         }
                     }
@@ -138,14 +146,19 @@ class PlacementTestController extends Controller
 
         // If no level mapping provided, use default GSE scale
         if (empty($levelMapping)) {
-            $levelMapping = [
-                "22-35" => "starter",              // GSE 22-35: Starter (A1-A1+)
-                "30-42" => "elementary",           // GSE 30-42: Elementary (A1+-A2)
-                "36-46" => "pre-intermediate",     // GSE 36-46: Pre-Intermediate (A2-B1-)
-                "46-58" => "intermediate",         // GSE 46-58: Intermediate (B1)
-                "57-67" => "upper-intermediate",   // GSE 57-67: Upper Intermediate (B2)
-                "66-78" => "advanced"              // GSE 66-78: Advanced (C1)
-            ];
+            $starter = \App\Models\Level::where('name', 'starter')->first();
+            $elementary = \App\Models\Level::where('name', 'elementary')->first();
+            $preIntermediate = \App\Models\Level::where('name', 'pre-intermediate')->first();
+            $intermediate = \App\Models\Level::where('name', 'intermediate')->first();
+            $upperIntermediate = \App\Models\Level::where('name', 'upper-intermediate')->first();
+            $advanced = \App\Models\Level::where('name', 'advanced')->first();
+
+            if ($starter) $levelMapping["22-35"] = "starter";
+            if ($elementary) $levelMapping["30-42"] = "elementary";
+            if ($preIntermediate) $levelMapping["36-46"] = "pre-intermediate";
+            if ($intermediate) $levelMapping["46-58"] = "intermediate";
+            if ($upperIntermediate) $levelMapping["57-67"] = "upper-intermediate";
+            if ($advanced) $levelMapping["66-78"] = "advanced";
         }
 
         $placementTest->update([

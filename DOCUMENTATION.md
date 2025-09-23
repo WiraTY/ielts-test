@@ -223,13 +223,13 @@ database/
 - status (string) - 'in_progress', 'completed', 'timeout'
 - created_at, updated_at (timestamps)
 
-### Placement Test Answers
+### Levels
 - id (bigint, primary)
-- attempt_id (foreign key to placement_test_attempts.id)
-- question_id (foreign key to placement_test_questions.id)
-- selected_answer (string) - Student's selected option
-- is_correct (boolean, nullable)
-- score_awarded (integer, nullable)
+- name (string, unique) - Internal level identifier (e.g., "starter", "elementary")
+- display_name (string) - User-friendly name shown to students
+- description (text, nullable) - Detailed description of the level
+- order (integer, unique) - Sequence for level progression
+- is_active (boolean, default: true) - Status flag for level availability
 - created_at, updated_at (timestamps)
 
 ### Lesson Audio
@@ -253,6 +253,15 @@ database/
 - user_id (foreign key to users.id)
 - lesson_id (foreign key to lessons.id)
 - file_path (string)
+- created_at, updated_at (timestamps)
+
+### Levels
+- id (bigint, primary)
+- name (string, unique) - Internal level identifier (e.g., "starter", "elementary")
+- display_name (string) - User-friendly name shown to students
+- description (text, nullable) - Detailed description of the level
+- order (integer, unique) - Sequence for level progression
+- is_active (boolean, default: true) - Status flag for level availability
 - created_at, updated_at (timestamps)
 
 ## Installation
@@ -380,6 +389,15 @@ Currently, the application primarily uses Livewire for interactivity rather than
 - `GET /admin/placement-tests/reports` - View placement test reports
 - `GET /admin/reports/level-progression` - View level progression reports
 - `GET /admin/user-level-tracking` - View user level tracking dashboard
+- `GET /admin/users` - List all users
+- `GET /admin/users/create` - Show form to create new user
+- `POST /admin/users` - Create new user
+- `GET /admin/users/{user}/edit` - Show form to edit user
+- `PUT /admin/users/{user}` - Update user information
+- `POST /admin/users/{user}/enable` - Enable user account
+- `POST /admin/users/{user}/disable` - Disable user account
+- `POST /admin/users/{user}/reset-placement-test` - Reset user's placement test status
+- `POST /admin/users/{user}/reset-password` - Reset user's password
 
 ### Student Endpoints
 - `POST /audio/store` - Store audio recordings for speaking practice
@@ -573,6 +591,53 @@ For additional support:
 3. Review application logs in `storage/logs/laravel.log`
 
 ## Recent Updates and Changes
+
+### September 23, 2025
+
+#### Level Management System Enhancement
+- **New Feature**: Added dedicated Level Management system with centralized level administration
+- **Database Structure**: Created new `levels` table to store level definitions with the following schema:
+  - `id` (bigint, primary) - Unique identifier
+  - `name` (string, unique) - Internal level identifier (e.g., "starter", "elementary")
+  - `display_name` (string) - User-friendly name shown to students
+  - `description` (text, nullable) - Detailed description of the level
+  - `order` (integer, unique) - Sequence for level progression
+  - `is_active` (boolean, default: true) - Status flag for level availability
+  - `created_at`, `updated_at` (timestamps) - Audit fields
+- **Admin Interface**: Added comprehensive CRUD interface for level management:
+  - Create new levels with custom names, display names, descriptions, and order
+  - Edit existing level properties
+  - Delete levels (with validation to prevent deletion of levels in use)
+  - View detailed level information including usage statistics
+- **Navigation Integration**: Added "Levels" menu item to admin navigation for easy access
+- **Placement Test Integration**: Updated placement test forms to use dynamic level dropdowns:
+  - Level selection dropdowns now populate from the `levels` database table
+  - Ensures consistency across all placement tests
+  - Prevents typos and invalid level names
+  - Supports custom levels added by administrators
+- **Validation Improvements**: Enhanced level validation throughout the application:
+  - Placement test level mapping now validates against existing levels in database
+  - Prevents assignment of non-existent levels
+  - Provides better error handling for level-related operations
+- **Seeder Implementation**: Created `LevelSeeder` to populate the database with default Pearson GSE-aligned levels:
+  - Starter (Order: 1) - GSE 22-35 (CEFR A1-A1+)
+  - Elementary (Order: 2) - GSE 30-42 (CEFR A1+-A2)
+  - Pre-Intermediate (Order: 3) - GSE 36-46 (CEFR A2-B1-)
+  - Intermediate (Order: 4) - GSE 46-58 (CEFR B1)
+  - Upper Intermediate (Order: 5) - GSE 57-67 (CEFR B2)
+  - Advanced (Order: 6) - GSE 66-78 (CEFR C1)
+- **Flexibility Enhancement**: Administrators can now:
+  - Add custom levels beyond the standard Pearson GSE levels
+  - Modify level properties to match organizational needs
+  - Deactivate levels without deleting them
+  - Reorder levels to change progression sequence
+- **Backward Compatibility**: Maintained compatibility with existing placement tests, courses, and user levels
+- **Future-Proofing**: Created foundation for advanced level features:
+  - Level prerequisites
+  - Custom level metadata
+  - Enhanced reporting capabilities
+
+This enhancement provides administrators with complete control over the leveling system while maintaining consistency and data integrity across the platform. The new Level Management system enables organizations to customize their level structure while preserving the benefits of the Pearson GSE alignment.
 
 ### September 22, 2025
 
@@ -973,6 +1038,18 @@ This document tracks the implementation of the placement test and leveling syste
 63. [x] Perform final testing in staging environment
 64. [x] Prepare release notes
 
+### Phase 11: Level Management System Enhancement (September 2025)
+65. [x] Create migration for `levels` table
+66. [x] Create `Level` model with relationships
+67. [x] Create `LevelController` with CRUD operations
+68. [x] Create admin views for level management (index, create, edit, show)
+69. [x] Add navigation menu item for Levels
+70. [x] Update placement test forms to use level dropdown from database
+71. [x] Update level assignment logic to use levels from database
+72. [x] Add validation to prevent deletion of levels in use
+73. [x] Create `LevelSeeder` to populate default Pearson GSE levels
+74. [x] Update documentation with new level management features
+
 ## Status Legend
 - [ ] Not Started
 - [ ] In Progress
@@ -999,5 +1076,6 @@ The placement test and leveling system has been fully implemented with all plann
 - Comprehensive reporting and analytics
 - Full test coverage
 - Complete documentation
+- Centralized level management system
 
 The system is now ready for production deployment.

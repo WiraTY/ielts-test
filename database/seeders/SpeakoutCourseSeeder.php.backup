@@ -1,0 +1,2099 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
+
+class SpeakoutCourseSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        // Disable foreign key checks
+        Schema::disableForeignKeyConstraints();
+        
+        // Clear existing data
+        DB::table('lesson_speaking')->truncate();
+        DB::table('lesson_audio')->truncate();
+        DB::table('lessons')->truncate();
+        DB::table('courses')->truncate();
+        
+        // Re-enable foreign key checks
+        Schema::enableForeignKeyConstraints();
+        
+        // Course levels mapping
+        $courseLevels = [
+            'Starter' => 'starter',
+            'Elementary' => 'elementary',
+            'Pre-Intermediate' => 'pre-intermediate',
+            'Intermediate' => 'intermediate',
+            'Upper Intermediate' => 'upper-intermediate',
+            'Advanced' => 'advanced'
+        ];
+        
+        // Course data
+        $courses = [
+            [
+                'title' => 'Speakout Starter',
+                'level' => 'starter',
+                'description' => 'Beginner English course for absolute beginners. Learn basic greetings, introductions, numbers, family, daily routines, food, time, hobbies, descriptions, shopping, directions, weather, and seasons.'
+            ],
+            [
+                'title' => 'Speakout Elementary',
+                'level' => 'elementary',
+                'description' => 'Elementary English course for those with basic knowledge. Cover everyday life routines, jobs, free time activities, food and restaurants, places in town, travel, shopping, weather and clothes, past experiences, holidays, and future plans.'
+            ],
+            [
+                'title' => 'Speakout Pre-Intermediate',
+                'level' => 'pre-intermediate',
+                'description' => 'Pre-intermediate English course expanding communication skills. Topics include meeting people, life stories, describing people, daily routines, travel and holidays, food and cooking, shopping and money, work and education, technology and media, health and lifestyle, and future plans.'
+            ],
+            [
+                'title' => 'Speakout Intermediate',
+                'level' => 'intermediate',
+                'description' => 'Intermediate English course for developing fluency. Explore personal experiences, daily life routines, entertainment and media, travel and adventure, health and fitness, jobs and careers, shopping and services, technology and communication, society and culture, environment and nature, and future plans.'
+            ],
+            [
+                'title' => 'Speakout Upper Intermediate',
+                'level' => 'upper-intermediate',
+                'description' => 'Upper intermediate English course for advanced communication. Topics include identity and personality, travel and discovery, work and ambitions, education and learning, media and communication, society and lifestyles, health and wellbeing, nature and environment, crime and justice, technology and innovation, art and creativity.'
+            ],
+            [
+                'title' => 'Speakout Advanced',
+                'level' => 'advanced',
+                'description' => 'Advanced English course for sophisticated communication. Cover advanced communication skills, global issues, advanced storytelling, academic writing, business and economics, media and society, innovation and ethics, culture and identity, science and society, philosophy and critical thinking, advanced negotiation.'
+            ]
+        ];
+        
+        // Insert courses and collect their IDs
+        $courseIds = [];
+        foreach ($courses as $index => $courseData) {
+            $courseData['slug'] = Str::slug($courseData['title']);
+            $courseData['is_trial'] = true;
+            $courseData['published_at'] = now(); // Set course as published
+            $courseData['order'] = $index * 10;
+            $courseData['created_by'] = 1; // Assuming admin user ID is 1
+            $courseData['created_at'] = now();
+            $courseData['updated_at'] = now();
+            
+            $courseId = DB::table('courses')->insertGetId($courseData);
+            $courseIds[$courseData['level']] = $courseId;
+        }
+        
+        // Lesson data for each course with full content
+        $courseContent = [
+            // Starter (A1) Lessons
+            'starter' => [
+                [
+                    'title' => 'Greetings & Introductions',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bisa menyapa orang dalam berbagai situasi (pagi, siang, sore).</li>
+  <li>Bisa memperkenalkan diri dengan benar.</li>
+  <li>Bisa menanggapi perkenalan orang lain.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Greetings (Salam):</strong></p>
+<ul>
+  <li>Hello</li>
+  <li>Hi</li>
+  <li>Good morning</li>
+  <li>Good afternoon</li>
+  <li>Good evening</li>
+  <li>Goodbye</li>
+</ul>
+
+<p><strong>Introductions:</strong></p>
+<ul>
+  <li>What's your name?</li>
+  <li>My name is…</li>
+  <li>I'm…</li>
+  <li>Nice to meet you</li>
+</ul>
+
+<h4>Dialog Contoh:</h4>
+<p>👩 A: <em>Hello! What's your name?</em><br>
+👨 B: <em>Hi! My name is Andi. Nice to meet you.</em><br>
+👩 A: <em>Nice to meet you too.</em></p>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>I am</strong> → <code>I'm</code></li>
+  <li><strong>You are</strong> → <code>You're</code></li>
+  <li><strong>He/She is</strong> → <code>He's / She's</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan dialog.
+
+Ulangi 2 kali.
+
+Pause, lalu coba ucapkan sendiri.",
+                    'speaking_practice' => "Hello, my name is [nama kamu].
+
+Nice to meet you."
+                ],
+                [
+                    'title' => 'Numbers & Countries',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menggunakan angka <strong>1–20</strong>.</li>
+  <li>Menanyakan dan menyebutkan asal negara.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Numbers:</strong> 1–20</p>
+<p><strong>Countries &amp; Nationalities:</strong></p>
+<ul>
+  <li>Indonesia / <em>Indonesian</em></li>
+  <li>Japan / <em>Japanese</em></li>
+  <li>USA / <em>American</em></li>
+  <li>UK / <em>British</em></li>
+  <li>Australia / <em>Australian</em></li>
+</ul>
+
+<h4>Pertanyaan contoh</h4>
+<p><strong>Q:</strong> <em>Where are you from?</em><br>
+   <strong>A:</strong> <em>I’m from Indonesia.</em></p>
+
+<h3>📝 Grammar Focus</h3>
+<p><strong>Wh- questions:</strong> <code>Where + to be</code></p>
+HTML,
+                    'listening_practice' => "Dengarkan orang menyebutkan angka dan negara.",
+                    'speaking_practice' => "I’m from [your country].
+
+Where are you from?"
+                ],
+                [
+                    'title' => 'Family & Friends',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Mengenal kosakata keluarga.</li>
+  <li>Menggunakan possessive <strong>’s</strong>.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Family:</strong></p>
+<ul>
+  <li>father</li>
+  <li>mother</li>
+  <li>brother</li>
+  <li>sister</li>
+  <li>friend</li>
+  <li>parents</li>
+  <li>son</li>
+  <li>daughter</li>
+</ul>
+
+<p><strong>Pattern:</strong> <em>This is my brother</em> / <em>This is Maria’s mother</em></p>
+
+<h3>📝 Grammar Focus</h3>
+<p><strong>Possessive 's:</strong> <code>Maria's brother</code></p>
+HTML,
+                    'listening_practice' => "Dengarkan perkenalan keluarga.",
+                    'speaking_practice' => "This is my [family member]."
+                ],
+                [
+                    'title' => 'Daily Routines',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menyebutkan aktivitas harian.</li>
+  <li>Menggunakan <strong>present simple</strong>.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Activities:</strong></p>
+<ul>
+  <li>wake up</li>
+  <li>go to school</li>
+  <li>eat breakfast</li>
+  <li>study</li>
+  <li>watch TV</li>
+  <li>sleep</li>
+</ul>
+
+<p><strong>Question:</strong> <em>What time do you wake up?</em></p>
+
+<h3>📝 Grammar Focus</h3>
+<p><strong>Present simple:</strong></p>
+<ul>
+  <li><code>I wake up at 7</code></li>
+  <li><code>She wakes up at 7</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan rutinitas harian orang lain.",
+                    'speaking_practice' => "I wake up at ___."
+                ],
+                                [
+                    'title' => 'Food & Drinks',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menyebut makanan/minuman.</li>
+  <li>Menyatakan suka/tidak suka.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Food:</strong></p>
+<ul>
+  <li>rice</li>
+  <li>bread</li>
+  <li>chicken</li>
+  <li>fish</li>
+</ul>
+
+<p><strong>Drinks:</strong></p>
+<ul>
+  <li>water</li>
+  <li>tea</li>
+  <li>coffee</li>
+  <li>juice</li>
+</ul>
+
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>I like…</em></li>
+  <li><em>I don’t like…</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<p><strong>Like / Don't like + noun:</strong></p>
+<ul>
+  <li><code>I like rice</code></li>
+  <li><code>I don't like fish</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan orang menyebut makanan favorit.",
+                    'speaking_practice' => "I like [food]. I don't like [food]."
+                ],
+                [
+                    'title' => 'Time & Days',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menyebutkan jam dan hari.</li>
+  <li>Bertanya tentang waktu.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Days:</strong></p>
+<ul>
+  <li>Monday</li>
+  <li>Tuesday</li>
+  <li>Wednesday</li>
+  <li>Thursday</li>
+  <li>Friday</li>
+  <li>Saturday</li>
+  <li>Sunday</li>
+</ul>
+
+<p><strong>Time:</strong></p>
+<p><strong>Question:</strong> <em>What time is it?</em><br>
+<strong>Answer:</strong> <em>It's 3 o'clock</em>.</p>
+
+<h3>📝 Grammar Focus</h3>
+<p><strong>It's + time:</strong></p>
+<ul>
+  <li><code>It's 8 o'clock</code></li>
+  <li><code>It's 3:30</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan pengumuman waktu.",
+                    'speaking_practice' => "It's __ o'clock."
+                ],
+                [
+                    'title' => 'Hobbies & Free Time',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang hobi.</li>
+  <li>Menggunakan <strong>like + verb-ing</strong>.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Hobbies:</strong></p>
+<ul>
+  <li>reading</li>
+  <li>swimming</li>
+  <li>playing football</li>
+  <li>watching movies</li>
+</ul>
+
+<p><strong>Expression:</strong> <em>I like swimming</em>.</p>
+
+<h3>📝 Grammar Focus</h3>
+<p><strong>Like + verb-ing:</strong></p>
+<ul>
+  <li><code>I like reading books</code></li>
+  <li><code>She likes playing tennis</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan orang bicara tentang hobinya.",
+                    'speaking_practice' => "I like [verb-ing]."
+                ],
+                [
+                    'title' => 'Describing People',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Mendeskripsikan penampilan orang.</li>
+  <li>Menggunakan <strong>adjective</strong>.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Adjectives:</strong></p>
+<ul>
+  <li>tall</li>
+  <li>short</li>
+  <li>young</li>
+  <li>old</li>
+  <li>beautiful</li>
+  <li>handsome</li>
+</ul>
+
+<p><strong>Pattern:</strong> <em>She is tall</em>. <em>He is young</em>.</p>
+
+<h3>📝 Grammar Focus</h3>
+<p><strong>to be + adjective:</strong></p>
+<ul>
+  <li><code>I am tall</code></li>
+  <li><code>She is beautiful</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan deskripsi orang.",
+                    'speaking_practice' => "My friend is ___."
+                ],
+                [
+                    'title' => 'Shopping',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menyebutkan barang.</li>
+  <li>Menanyakan harga.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Items:</strong></p>
+<ul>
+  <li>book</li>
+  <li>pen</li>
+  <li>bag</li>
+  <li>shoes</li>
+  <li>shirt</li>
+</ul>
+
+<p><strong>Expression:</strong> <em>How much is it?</em> → <em>It's $5</em>.</p>
+
+<h3>📝 Grammar Focus</h3>
+<p><strong>How much + is/are:</strong></p>
+<ul>
+  <li><code>How much is this book?</code></li>
+  <li><code>How much are these shoes?</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan percakapan di toko.",
+                    'speaking_practice' => "How much is this?"
+                ],
+                [
+                    'title' => 'Around Town / Directions',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Mengenal tempat di kota.</li>
+  <li>Bertanya arah jalan.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Places:</strong></p>
+<ul>
+  <li>bank</li>
+  <li>school</li>
+  <li>park</li>
+  <li>supermarket</li>
+  <li>hospital</li>
+</ul>
+
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>Where is the bank?</em></li>
+  <li><em>Go straight, turn left, turn right</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<p><strong>Where is + place?</strong></p>
+<ul>
+  <li><code>Where is the bank?</code></li>
+  <li><code>It's next to the supermarket</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan instruksi arah.",
+                    'speaking_practice' => "Where is the __?"
+                ],
+                [
+                    'title' => 'Weather & Seasons',
+                    'content' => "🎯 Learning Objectives
+
+Menyebutkan cuaca.
+
+Bicara tentang musim.
+
+📖 Materi
+Weather: sunny, rainy, cloudy, windy, hot, cold
+Seasons: summer, winter, rainy season
+Pattern: It's sunny today.
+
+📝 Grammar Focus
+
+It's + adjective (weather)",
+                    'listening_practice' => "Dengarkan ramalan cuaca.",
+                    'speaking_practice' => "It's [weather] today."
+                ],
+                [
+                    'title' => 'Review & Consolidation',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Mengulang materi 1–11.</li>
+  <li>Berlatih percakapan lengkap.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<ul>
+  <li>Greetings & Introductions</li>
+  <li>Numbers & Countries</li>
+  <li>Family</li>
+  <li>Daily routines</li>
+  <li>Food</li>
+  <li>Hobbies</li>
+  <li>Describing</li>
+  <li>Shopping</li>
+  <li>Directions</li>
+  <li>Weather</li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li>Review <strong>to be</strong></li>
+  <li><strong>present simple</strong></li>
+  <li><strong>like + ing</strong></li>
+  <li><strong>possessive 's</strong></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan percakapan gabungan (perkenalan, hobi, belanja).",
+                    'speaking_practice' => "Simulasi percakapan sehari-hari."
+                ]
+            ],
+            
+            // Elementary (A2) Lessons
+            'elementary' => [
+                [
+                    'title' => 'Everyday Life',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang aktivitas sehari-hari.</li>
+  <li>Menanyakan rutinitas orang lain.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Activities:</strong></p>
+<ul>
+  <li>get up</li>
+  <li>have breakfast</li>
+  <li>go to work</li>
+  <li>have lunch</li>
+  <li>finish work</li>
+  <li>go home</li>
+  <li>watch TV</li>
+  <li>go to bed</li>
+</ul>
+
+<p><strong>Questions:</strong></p>
+<ul>
+  <li><em>What time do you get up?</em></li>
+  <li><em>Do you go to work by bus?</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Present Simple:</strong> he/she + -s → <code>She gets up at 7</code>.</li>
+  <li><strong>Questions with do/does</strong></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan orang menceritakan rutinitasnya.",
+                    'speaking_practice' => "I get up at ___.
+
+Do you watch TV at night?"
+                ],
+                                [
+                    'title' => 'Work and Jobs',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menyebutkan pekerjaan.</li>
+  <li>Menjelaskan apa yang dilakukan seseorang.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Jobs:</strong> teacher, student, doctor, engineer, driver, nurse, waiter</p>
+<p><strong>Expressions:</strong> What do you do? I'm a student.</p>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>a/an + job:</strong> I'm a doctor.</li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan orang memperkenalkan pekerjaan mereka.",
+                    'speaking_practice' => "What do you do?
+
+I'm a [job]."
+                ],,
+                [
+                    'title' => 'Free Time',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang kegiatan di waktu luang.</li>
+  <li>Menyatakan suka/tidak suka.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Activities:</strong> go shopping, play football, listen to music, read books, surf the internet</p>
+<p><strong>Expressions:</strong> I love..., I like..., I don't like...</p>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Like/love + verb-ing:</strong> I like reading books</li>
+</ul>
+HTML,
+Expressions: I love…, I like…, I don’t like…
+
+📝 Grammar Focus
+
+Like/love + verb-ing",
+                    'listening_practice' => "Dengarkan orang bicara tentang hobi.",
+                    'speaking_practice' => "I like [activity].
+
+Do you like reading?"
+                ],
+                [
+                    'title' => 'Food & Restaurants',
+                    'content' => "🎯 Learning Objectives
+
+Menyebutkan makanan/minuman.
+
+Memesan makanan di restoran.
+
+📖 Materi
+Food & Drinks: rice, chicken, salad, water, juice, coffee
+Expressions: Can I have…, please?
+
+📝 Grammar Focus
+
+Countable/uncountable nouns (a sandwich, some rice)",
+                    'listening_practice' => "Dengarkan orang memesan makanan.",
+                    'speaking_practice' => "Can I have a coffee, please?"
+                ],
+                [
+                    'title' => 'Places in Town',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menyebutkan tempat umum.</li>
+  <li>Memberi dan bertanya arah.</li>
+</ul>
+HTML,
+
+📖 Materi
+Places: post office, bus station, supermarket, bank, cinema, restaurant
+Expressions: Where’s the bank? It’s next to the supermarket.
+
+📝 Grammar Focus
+
+Prepositions of place: next to, opposite, between",
+                    'listening_practice' => "Dengarkan orang bertanya arah.",
+                    'speaking_practice' => "Where’s the __?
+
+It’s next to the __."
+                ],
+                [
+                    'title' => 'Travel',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang transportasi dan perjalanan.</li>
+  <li>Menanyakan jadwal transportasi.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Transport:</strong></p>
+<ul>
+  <li>bus</li>
+  <li>train</li>
+  <li>taxi</li>
+  <li>airplane</li>
+  <li>bicycle</li>
+</ul>
+
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>How do you go to school?</em></li>
+  <li><em>By bus.</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>By + transport:</strong> <code>by bus</code>, <code>by car</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan orang bicara tentang perjalanan.",
+                    'speaking_practice' => "I go to work by ___."
+                ],
+                [
+                    'title' => 'Daily Shopping',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Berbelanja kebutuhan sehari-hari.</li>
+  <li>Menanyakan harga barang.</li>
+</ul>
+HTML,
+
+📖 Materi
+Items: bread, milk, eggs, fruit, vegetables
+Expressions: How much is it? It’s $2.
+
+📝 Grammar Focus
+
+How much + is/are",
+                    'listening_practice' => "Dengarkan percakapan di toko.",
+                    'speaking_practice' => "How much is this?"
+                ],
+                [
+                    'title' => 'Weather & Clothes',
+                    'content' => "🎯 Learning Objectives
+
+Bicara tentang cuaca dan pakaian.
+
+Menyatakan preferensi berpakaian sesuai cuaca.
+
+📖 Materi
+Weather: sunny, rainy, cold, hot
+Clothes: shirt, trousers, dress, coat, shoes
+Expressions: It’s cold. I’m wearing a coat.
+
+📝 Grammar Focus
+
+Present continuous: I’m wearing a ___.",
+                    'listening_practice' => "Dengarkan laporan cuaca.",
+                    'speaking_practice' => "Today it’s ___.
+
+I’m wearing ___."
+                ],
+                [
+                    'title' => 'Past Experiences',
+                    'content' => "🎯 Learning Objectives
+
+Menceritakan pengalaman di masa lalu.
+
+Menggunakan past simple.
+
+📖 Materi
+Verbs (past): went, saw, ate, had, visited
+Expressions: Last weekend I went to the beach.
+
+📝 Grammar Focus
+
+Past simple: verb + -ed / irregular verbs",
+                    'listening_practice' => "Dengarkan cerita akhir pekan seseorang.",
+                    'speaking_practice' => "Last weekend I ___."
+                ],
+                [
+                    'title' => 'Holidays',
+                    'content' => "🎯 Learning Objectives
+
+Bicara tentang liburan.
+
+Menyebutkan kegiatan liburan favorit.
+
+📖 Materi
+Activities: swimming, sightseeing, relaxing, taking photos
+Expressions: I went to Bali. It was great!
+
+📝 Grammar Focus
+
+Past simple with was/were",
+                    'listening_practice' => "Dengarkan orang bercerita tentang liburannya.",
+                    'speaking_practice' => "Where did you go on holiday?
+
+I went to ___."
+                ],
+                [
+                    'title' => 'Future Plans',
+                    'content' => "🎯 Learning Objectives
+
+Bicara tentang rencana masa depan.
+
+Menggunakan going to.
+
+📖 Materi
+Expressions: I’m going to visit my friend. He’s going to study tomorrow.
+
+📝 Grammar Focus
+
+be + going to + verb",
+                    'listening_practice' => "Dengarkan orang bicara tentang rencananya.",
+                    'speaking_practice' => "I’m going to ___."
+                ],
+                [
+                    'title' => 'Review & Consolidation',
+                    'content' => "🎯 Learning Objectives
+
+Mengulang materi Lessons 1–11.
+
+Membuat percakapan lebih panjang.
+
+📖 Materi
+
+Routines, Jobs, Free time, Food, Places, Travel, Shopping, Weather, Past experiences, Future plans
+
+📝 Grammar Focus
+
+Review: Present simple, Past simple, Going to",
+                    'listening_practice' => "Dengarkan percakapan gabungan (rutinitas + liburan + rencana).",
+                    'speaking_practice' => "Ceritakan sehari-hari, pengalaman, dan rencana ke depan."
+                ]
+            ],
+            
+            // Pre-Intermediate (A2-B1) Lessons
+            'pre-intermediate' => [
+                [
+                    'title' => 'Meeting People',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Memperluas perkenalan diri.</li>
+  <li>Bicara tentang asal, pekerjaan, dan hobi.</li>
+</ul>
+HTML,
+
+📖 Materi
+HTML,
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>Where are you from?</em></li>
+  <li><em>What do you do?</em></li>
+  <li><em>What are your hobbies?</em></li>
+</ul>
+
+📝 Grammar Focus
+
+Question forms: Where/What/Who/When
+
+Short answers: Yes, I am. / No, I’m not.",
+                    'listening_practice' => "Dengarkan percakapan dua orang baru kenal.",
+                    'speaking_practice' => "I’m from ___.
+
+I work as a ___.
+
+My hobby is ___."
+                ],
+                [
+                    'title' => 'Life Stories',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menceritakan pengalaman masa lalu.</li>
+  <li>Menggunakan past simple dengan lancar.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Verbs (past):</strong></p>
+<ul>
+  <li>studied</li>
+  <li>lived</li>
+  <li>worked</li>
+  <li>traveled</li>
+  <li>met</li>
+</ul>
+
+<p><strong>Expressions:</strong> <em>I lived in Jakarta for 2 years.</em></p>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Past simple:</strong> regular & irregular verbs</li>
+  <li><strong>Time expressions:</strong> last year, in 2010, two weeks ago</li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan seseorang bercerita tentang hidupnya.",
+                    'speaking_practice' => "I traveled to ___ last year."
+                ],
+                [
+                    'title' => 'Describing People',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Mendeskripsikan penampilan fisik dan kepribadian.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Appearance:</strong></p>
+<ul>
+  <li>tall</li>
+  <li>short</li>
+  <li>slim</li>
+  <li>curly hair</li>
+  <li>blue eyes</li>
+</ul>
+
+<p><strong>Personality:</strong></p>
+<ul>
+  <li>friendly</li>
+  <li>shy</li>
+  <li>talkative</li>
+  <li>funny</li>
+</ul>
+
+<p><strong>Expressions:</strong> <em>He is tall and friendly.</em></p>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>be + adjective</strong></li>
+  <li><strong>and / but to connect ideas</strong></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan deskripsi orang.",
+                    'speaking_practice' => "My friend is ___.
+
+He/She has ___."
+                ],
+                [
+                    'title' => 'Daily Routines & Time',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara lebih detail tentang rutinitas dengan waktu tertentu.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>I usually wake up at 7 a.m.</em></li>
+  <li><em>I often go jogging in the morning.</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Adverbs of frequency:</strong> always, usually, often, sometimes, never</li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan orang bicara tentang jadwal harian.",
+                    'speaking_practice' => "I usually ___.
+
+I sometimes ___."
+                ],
+                [
+                    'title' => 'Travel & Holidays',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang perjalanan, transportasi, dan pengalaman liburan.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Transport:</strong></p>
+<ul>
+  <li>ferry</li>
+  <li>underground</li>
+  <li>tram</li>
+</ul>
+
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>How did you travel?</em></li>
+  <li><em>Where did you stay?</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Past simple questions:</strong> <code>Did you go by train?</code> Yes, I did.</li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan percakapan orang tentang liburan mereka.",
+                    'speaking_practice' => "I went to ___ by ___."
+                ],
+                [
+                    'title' => 'Food & Cooking',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang makanan favorit dan memasak.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Food:</strong></p>
+<ul>
+  <li>pasta</li>
+  <li>soup</li>
+  <li>fish</li>
+  <li>fruit salad</li>
+</ul>
+
+<p><strong>Cooking verbs:</strong></p>
+<ul>
+  <li>boil</li>
+  <li>fry</li>
+  <li>bake</li>
+  <li>grill</li>
+</ul>
+
+<p><strong>Expressions:</strong> <em>I like grilled fish.</em></p>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Countable/uncountable nouns:</strong> <code>a banana</code>, <code>some soup</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan resep sederhana.",
+                    'speaking_practice' => "My favorite food is ___.
+
+I usually cook ___."
+                ],
+                [
+                    'title' => 'Shopping & Money',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Membeli barang dan menanyakan harga.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>How much is this?</em></li>
+  <li><em>Can I try it on?</em></li>
+  <li><em>Do you have it in blue?</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Comparative adjectives:</strong> <code>cheaper</code>, <code>more expensive</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan percakapan di toko pakaian.",
+                    'speaking_practice' => "This shirt is cheaper than that one."
+                ],
+                                [
+                    'title' => 'Work & Education',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang pekerjaan, sekolah, dan belajar.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>I work in a bank.</em></li>
+  <li><em>I study at university.</em></li>
+  <li><em>I'm interested in science.</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Present continuous for temporary actions:</strong> <code>I'm studying English now.</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan orang bercerita tentang pekerjaannya.",
+                    'speaking_practice' => "I'm working/studying ___."
+                ],,
+                [
+                    'title' => 'Technology & Media',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang penggunaan teknologi sehari-hari.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Words:</strong></p>
+<ul>
+  <li>computer</li>
+  <li>smartphone</li>
+  <li>internet</li>
+  <li>social media</li>
+</ul>
+
+<p><strong>Expressions:</strong> <em>I use my phone to check emails.</em></p>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Verb + to + infinitive:</strong> <code>I use my phone to play music.</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan orang bicara tentang gadgetnya.",
+                    'speaking_practice' => "I use my ___ to ___."
+                ],
+                [
+                    'title' => 'Health & Lifestyle',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang kesehatan, olahraga, dan gaya hidup.</li>
+</ul>
+HTML,
+
+📖 Materi
+HTML,
+
+<h3>📖 Materi</h3>
+<p><strong>Words:</strong></p>
+<ul>
+  <li>exercise</li>
+  <li>healthy food</li>
+  <li>sleep</li>
+  <li>stress</li>
+</ul>
+
+<p><strong>Expressions:</strong> <em>I try to eat healthy food.</em></p>
+
+📝 Grammar Focus
+
+Should/shouldn’t: You should eat more vegetables.",
+                    'listening_practice' => "Dengarkan saran kesehatan.",
+                    'speaking_practice' => "You should ___.
+
+You shouldn’t ___."
+                ],
+                [
+                    'title' => 'Future Plans & Ambitions',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang rencana masa depan dengan detail.</li>
+</ul>
+HTML,
+
+📖 Materi
+Expressions: I’m going to travel. I’d like to study abroad.
+
+📝 Grammar Focus
+
+be going to / would like to",
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>I'm going to travel.</em></li>
+  <li><em>I'd like to study abroad.</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>be going to / would like to</strong></li>
+</ul>
+                    'listening_practice' => "Dengarkan orang membicarakan ambisinya.",
+                    'speaking_practice' => "I’m going to ___.
+
+I’d like to ___."
+                ],
+                [
+                    'title' => 'Review & Project',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Mengulang materi Lessons 1–11.</li>
+  <li>Membuat presentasi mini tentang diri sendiri.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<ul>
+  <li>Perkenalan</li>
+  <li>Rutinitas</li>
+  <li>Makanan</li>
+  <li>Liburan</li>
+  <li>Pekerjaan</li>
+  <li>Teknologi</li>
+  <li>Rencana masa depan</li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li>Review: Past simple</li>
+  <li>Present continuous</li>
+  <li>Going to</li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan percakapan campuran.",
+                    'speaking_practice' => "Buat presentasi tentang hidupmu, hobi, pengalaman, dan rencanamu."
+                ]
+            ],
+            
+            // Intermediate (B1) Lessons
+            'intermediate' => [
+                [
+                    'title' => 'Personal Experiences',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bisa menceritakan pengalaman pribadi dengan detail.</li>
+  <li>Menggunakan past simple & present perfect dengan benar.</li>
+</ul>
+HTML,
+
+📖 Materi
+HTML,
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong> <em>I've been to Bali. I went there last year. It was amazing.</em></p>
+
+📝 Grammar Focus
+
+Present perfect vs past simple
+
+ever/never, already/yet",
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Present perfect vs past simple</strong></li>
+  <li><strong>ever/never, already/yet</strong></li>
+</ul>
+                    'listening_practice' => "Dengarkan orang membicarakan pengalaman liburannya.",
+                    'speaking_practice' => "Have you ever ___?
+
+Yes, I have. / No, I haven’t."
+                ],
+                [
+                    'title' => 'Daily Life & Routines',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara lebih detail tentang kebiasaan dan rutinitas.</li>
+</ul>
+HTML,
+
+📖 Materi
+Expressions: I usually wake up at 6, but I’m working late this week.
+
+📝 Grammar Focus
+
+Present simple vs present continuous
+
+State verbs vs action verbs",
+                    'listening_practice' => "Dengarkan deskripsi rutinitas seseorang.",
+                    'speaking_practice' => "I usually ___.
+
+Right now, I’m ___."
+                ],
+                [
+                    'title' => 'Entertainment & Media',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang film, musik, dan acara TV favorit.</li>
+</ul>
+HTML,
+
+📖 Materi
+Expressions: I love watching comedies. I’m really into pop music.
+
+📝 Grammar Focus
+
+Gerunds & infinitives: like/love + doing, want + to do",
+                    'listening_practice' => "Dengarkan orang bicara tentang film yang mereka suka.",
+                    'speaking_practice' => "I like watching ___.
+
+I want to see ___."
+                ],
+                [
+                    'title' => 'Travel & Adventure',
+                    'content' => "🎯 Learning Objectives
+
+Bicara tentang perjalanan, transportasi, dan petualangan.
+
+📖 Materi
+Expressions: I’d love to go backpacking. Traveling by train is comfortable.
+
+📝 Grammar Focus
+
+Comparatives & superlatives
+
+as … as, not as … as",
+                    'listening_practice' => "Dengarkan percakapan tentang liburan backpacking.",
+                    'speaking_practice' => "Traveling by plane is faster than ___."
+                ],
+                [
+                    'title' => 'Health & Fitness',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang gaya hidup sehat dan kebugaran.</li>
+</ul>
+HTML,
+
+📖 Materi
+HTML,
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>I try to exercise three times a week.</em></li>
+  <li><em>You should eat more fruit.</em></li>
+</ul>
+
+📝 Grammar Focus
+
+Should/shouldn’t, must/mustn’t",
+                    'listening_practice' => "Dengarkan saran dari dokter tentang kesehatan.",
+                    'speaking_practice' => "You should ___.
+
+You mustn’t ___."
+                ],
+                [
+                    'title' => 'Jobs & Careers',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang pekerjaan, karier, dan pengalaman kerja.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>I applied for a job.</em></li>
+  <li><em>I work as an engineer.</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Past continuous:</strong> <code>I was working when …</code></li>
+  <li><strong>Used to:</strong> <code>I used to work in a shop.</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan orang bercerita tentang kariernya.",
+                    'speaking_practice' => "I used to ___.
+
+When I was working at ___, I ___."
+                ],
+                [
+                    'title' => 'Shopping & Services',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang pengalaman belanja dan layanan.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>Could I try this on?</em></li>
+  <li><em>Do you have this in size M?</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Polite requests:</strong> <code>Could</code>, <code>Would</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan percakapan di toko.",
+                    'speaking_practice' => "Could I have ___, please?"
+                ],
+                [
+                    'title' => 'Technology & Communication',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang penggunaan teknologi dan komunikasi.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong> <em>I use my phone to check social media.</em></p>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Relative clauses:</strong> <code>The app that I use is very popular.</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan orang bicara tentang gadget favoritnya.",
+                    'speaking_practice' => "The ___ that I use most is ___."
+                ],
+                [
+                    'title' => 'Society & Culture',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang tradisi, kebiasaan, dan budaya.</li>
+</ul>
+HTML,
+
+📖 Materi
+HTML,
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong> <em>In my culture, people greet by shaking hands.</em></p>
+
+📝 Grammar Focus
+
+Present perfect continuous: I’ve been learning English for 3 years.",
+                    'listening_practice' => "Dengarkan orang bercerita tentang kebudayaan negaranya.",
+                    'speaking_practice' => "In my culture, we usually ___."
+                ],
+                [
+                    'title' => 'Environment & Nature',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang lingkungan, alam, dan isu global.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>We should recycle more.</em></li>
+  <li><em>Pollution is a big problem.</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>First conditional:</strong> <code>If + present, will + base verb</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan percakapan tentang lingkungan.",
+                    'speaking_practice' => "If we recycle, we will ___."
+                ],
+                [
+                    'title' => 'Future Plans & Predictions',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang prediksi dan rencana masa depan.</li>
+</ul>
+HTML,
+
+📖 Materi
+Expressions: I’m going to travel next year. Life will be different in 2050.
+
+📝 Grammar Focus
+
+Going to vs will",
+                    'listening_practice' => "Dengarkan prediksi tentang teknologi masa depan.",
+                    'speaking_practice' => "I’m going to ___.
+
+People will ___."
+                ],
+                [
+                    'title' => 'Review & Project',
+                    'content' => "🎯 Learning Objectives
+
+Mengulang semua materi Intermediate.
+
+Membuat presentasi singkat tentang “My Life and My Future”.
+
+📖 Materi
+
+Pengalaman, rutinitas, hiburan, pekerjaan, teknologi, lingkungan, masa depan.
+
+📝 Grammar Focus
+
+Mixed tenses review (past, present, future)",
+                    'listening_practice' => "Dengarkan percakapan review.",
+                    'speaking_practice' => "Presentasikan cerita hidupmu + rencanamu di masa depan."
+                ]
+            ],
+            
+            // Upper Intermediate (B2) Lessons
+            'upper-intermediate' => [
+                [
+                    'title' => 'Identity & Personality',
+                    'content' => "🎯 Learning Objectives
+
+Mendeskripsikan karakter dan identitas seseorang secara detail.
+
+Menggunakan kata sifat lanjutan untuk kepribadian.
+
+📖 Materi
+Words: ambitious, reliable, outgoing, introverted, generous
+Expressions: She comes across as friendly. He seems ambitious.
+
+📝 Grammar Focus
+
+Seem / appear / come across as
+
+Adjective + preposition (good at, interested in, keen on)",
+                    'listening_practice' => "Dengarkan deskripsi karakter tokoh publik.",
+                    'speaking_practice' => "My best friend seems ___.
+
+I’m really interested in ___."
+                ],
+                [
+                    'title' => 'Travel & Discovery',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Membicarakan pengalaman perjalanan tak terlupakan.</li>
+  <li>Menggunakan narrative tenses dengan baik.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>I had never seen such a place before.</em></li>
+  <li><em>We were driving when the storm started.</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Past simple, past continuous, past perfect</strong> (narrative tenses)</li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan cerita perjalanan menegangkan.",
+                    'speaking_practice' => "Tell a story about a surprising trip."
+                ],
+                [
+                    'title' => 'Work & Ambitions',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Membicarakan karier, ambisi, dan pencapaian profesional.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>I aim to become a manager.</em></li>
+  <li><em>She managed to finish on time.</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Verb patterns:</strong> <code>aim to</code>, <code>manage to</code>, <code>succeed in + -ing</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan wawancara tentang ambisi karier.",
+                    'speaking_practice' => "I aim to ___.
+
+I succeeded in ___."
+                ],
+                [
+                    'title' => 'Education & Learning',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang gaya belajar dan sistem pendidikan.</li>
+</ul>
+HTML,
+
+📖 Materi
+HTML,
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>I prefer learning by doing.</em></li>
+  <li><em>The course focuses on communication.</em></li>
+</ul>
+
+📝 Grammar Focus
+
+Gerunds after prepositions: interested in learning, good at speaking",
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Gerunds after prepositions:</strong> <code>interested in learning</code>, <code>good at speaking</code></li>
+</ul>
+                    'listening_practice' => "Dengarkan siswa berbicara tentang gaya belajar mereka.",
+                    'speaking_practice' => "I’m good at ___.
+
+I prefer ___."
+                ],
+                [
+                    'title' => 'Media & Communication',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Membicarakan berita, media, dan komunikasi modern.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>The news was broadcast live.</em></li>
+  <li><em>Social media influences people.</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Passive voice (present & past):</strong> <code>English is spoken worldwide.</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan berita singkat.",
+                    'speaking_practice' => "This app is used by millions."
+                ],
+                [
+                    'title' => 'Society & Lifestyles',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Membicarakan perubahan gaya hidup dan masyarakat.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>People tend to live longer now.</em></li>
+  <li><em>Society is becoming more diverse.</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Present continuous for change:</strong> <code>is becoming</code>, <code>are getting</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan percakapan tentang perubahan gaya hidup.",
+                    'speaking_practice' => "People are becoming more ___."
+                ],
+                [
+                    'title' => 'Health & Wellbeing',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang kesehatan mental & fisik.</li>
+</ul>
+HTML,
+
+📖 Materi
+HTML,
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>Stress can lead to illness.</em></li>
+  <li><em>Exercise helps reduce anxiety.</em></li>
+</ul>
+
+📝 Grammar Focus
+
+Modals of deduction: must, might, can’t",
+                    'listening_practice' => "Dengarkan saran kesehatan dari ahli.",
+                    'speaking_practice' => "He must be tired.
+
+It might be serious."
+                ],
+                [
+                    'title' => 'Nature & Environment',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Bicara tentang masalah lingkungan global.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>Deforestation affects climate change.</em></li>
+  <li><em>We need sustainable energy.</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Second conditional:</strong> <code>If I were rich, I would donate more.</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan diskusi tentang solusi lingkungan.",
+                    'speaking_practice' => "If I were a leader, I would ___."
+                ],
+                [
+                    'title' => 'Crime & Justice',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Membicarakan kejahatan, hukum, dan keadilan.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>He was accused of theft.</em></li>
+  <li><em>The trial lasted two weeks.</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Reported speech:</strong> <code>The police said he had stolen a car.</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan berita kriminal.",
+                    'speaking_practice' => "The witness said ___."
+                ],
+                [
+                    'title' => 'Technology & Innovation',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Membicarakan teknologi masa depan dan inovasi.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong> <em>Artificial intelligence will transform jobs.</em></p>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Future continuous & future perfect:</strong></li>
+  <ul>
+    <li><code>I will be working at 9.</code></li>
+    <li><code>By 2050, cars will have changed.</code></li>
+  </ul>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan prediksi tentang teknologi.",
+                    'speaking_practice' => "In 10 years, I will be ___.
+
+By 2050, people will have ___."
+                ],
+                [
+                    'title' => 'Art & Creativity',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Membicarakan seni, desain, dan kreativitas.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>The exhibition was fascinating.</em></li>
+  <li><em>Creativity is essential.</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Cleft sentences:</strong> <code>What I love is …</code> / <code>The thing that inspires me is …</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan review seni.",
+                    'speaking_practice' => "What I enjoy most is ___."
+                ],
+                [
+                    'title' => 'Review & Final Project',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menggabungkan semua topik B2.</li>
+  <li>Membuat presentasi argumentatif.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<ul>
+  <li>Identitas</li>
+  <li>Perjalanan</li>
+  <li>Karier</li>
+  <li>Teknologi</li>
+  <li>Lingkungan</li>
+  <li>Seni</li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Mixed conditionals</strong></li>
+  <li><strong>Narrative tenses</strong></li>
+  <li><strong>Modals</strong></li>
+  <li><strong>Future perfect</strong></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan debat singkat.",
+                    'speaking_practice' => "Presentasikan opini tentang \"The Future of Our World\"."
+                ]
+            ],
+            
+            // Advanced (C1) Lessons
+            'advanced' => [
+                [
+                    'title' => 'Advanced Communication',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menguasai idiom & collocation untuk komunikasi tingkat lanjut.</li>
+  <li>Menggunakan bahasa formal & informal sesuai konteks.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Idioms:</strong></p>
+<ul>
+  <li><em>break the ice</em></li>
+  <li><em>get straight to the point</em></li>
+  <li><em>beat around the bush</em></li>
+</ul>
+
+<p><strong>Collocations:</strong></p>
+<ul>
+  <li><em>effective communication</em></li>
+  <li><em>mutual understanding</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Inversion for emphasis:</strong> <code>Rarely have I seen such talent.</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan debat formal vs casual chat.",
+                    'speaking_practice' => "Break the ice with your partner.
+
+Use inversion: \"Never have I felt so …\""
+                ],
+                [
+                    'title' => 'Global Issues',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Berdiskusi tentang isu dunia (kemiskinan, migrasi, perubahan iklim).</li>
+  <li>Membuat argumen meyakinkan.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>It raises concerns about …</em></li>
+  <li><em>One solution could be …</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Hedging & cautious language:</strong> <code>It seems that …</code> / <code>It could be argued that …</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan wawancara aktivis lingkungan.",
+                    'speaking_practice' => "It could be argued that ….
+
+One possible solution is …."
+                ],
+                [
+                    'title' => 'Advanced Storytelling',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menceritakan kisah hidup dengan gaya naratif kompleks.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>Looking back</em></li>
+  <li><em>In hindsight</em></li>
+  <li><em>Little did I know …</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Mixed conditionals:</strong> <code>If I had studied harder, I would be a doctor now.</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan cerita pribadi inspiratif.",
+                    'speaking_practice' => "Tell your biggest turning point story."
+                ],
+                [
+                    'title' => 'Academic Writing Skills',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menguasai struktur essay argumentatif.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Linkers:</strong></p>
+<ul>
+  <li><em>moreover</em></li>
+  <li><em>however</em></li>
+  <li><em>in contrast</em></li>
+  <li><em>on the other hand</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Nominalisation:</strong> <code>decide → decision</code>, <code>fail → failure</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan kuliah singkat tentang essay structure.",
+                    'speaking_practice' => "Present a mini-argument using linking words."
+                ],
+                [
+                    'title' => 'Business & Economics',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Membicarakan tren ekonomi & bisnis global.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>supply and demand</em></li>
+  <li><em>economic downturn</em></li>
+  <li><em>booming industry</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Future perfect continuous:</strong> <code>By 2030, people will have been working remotely for decades.</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan laporan ekonomi.",
+                    'speaking_practice' => "By 2030, I will have been ___."
+                ],
+                                [
+                    'title' => 'Media & Society',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menganalisis pengaruh media terhadap opini publik.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>media bias</em></li>
+  <li><em>fake news</em></li>
+  <li><em>mass influence</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Emphatic structures:</strong> <code>What concerns me most is …</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan analisis berita.",
+                    'speaking_practice' => "What bothers me most is ___."
+                ],,
+                [
+                    'title' => 'Innovation & Ethics',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Diskusi kritis tentang etika teknologi baru.</li>
+</ul>
+HTML,
+
+📖 Materi
+HTML,
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>ethical dilemma</em></li>
+  <li><em>unintended consequences</em></li>
+  <li><em>cutting-edge</em></li>
+</ul>
+
+📝 Grammar Focus
+
+Complex conditionals: If technology were regulated, it might have prevented problems.",
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Complex conditionals:</strong> <code>If technology were regulated, it might have prevented problems.</code></li>
+</ul>
+                    'listening_practice' => "Dengarkan debat tentang AI.",
+                    'speaking_practice' => "If I were a policymaker, I would …."
+                ],
+                [
+                    'title' => 'Culture & Identity',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Mengeksplorasi identitas budaya & globalisasi.</li>
+</ul>
+HTML,
+
+📖 Materi
+HTML,
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>cultural heritage</em></li>
+  <li><em>clash of cultures</em></li>
+  <li><em>sense of belonging</em></li>
+</ul>
+
+📝 Grammar Focus
+
+Advanced relative clauses: which/that/whose/whom",
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Advanced relative clauses:</strong> <code>which/that/whose/whom</code></li>
+</ul>
+                    'listening_practice' => "Dengarkan wawancara tentang identitas budaya.",
+                    'speaking_practice' => "My culture, which …, is unique because …."
+                ],
+                                [
+                    'title' => 'Science & Society',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Diskusi peran sains dalam kehidupan modern.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>scientific breakthrough</em></li>
+  <li><em>evidence-based</em></li>
+  <li><em>research findings</em></li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Passive with reporting verbs:</strong> <code>It is believed that …</code> / <code>He is said to …</code></li>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan berita penelitian.",
+                    'speaking_practice' => "It is thought that ___.",
+                [
+                    'title' => 'Philosophy & Critical Thinking',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Melatih berpikir kritis & menyusun argumen filosofis.</li>
+</ul>
+HTML,
+
+📖 Materi
+HTML,
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>It raises the question of …</em></li>
+  <li><em>on a deeper level</em></li>
+  <li><em>thought-provoking</em></li>
+</ul>
+
+📝 Grammar Focus
+
+Subjunctive mood: It is essential that he be present.",
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Subjunctive mood:</strong> <code>It is essential that he be present.</code></li>
+</ul>
+                    'listening_practice' => "Dengarkan diskusi filsafat.",
+                    'speaking_practice' => "It is essential that …."
+                ],
+                [
+                    'title' => 'Advanced Negotiation',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menguasai bahasa untuk negosiasi kompleks.</li>
+</ul>
+HTML,
+
+📖 Materi
+HTML,
+
+<h3>📖 Materi</h3>
+<p><strong>Expressions:</strong></p>
+<ul>
+  <li><em>reach a compromise</em></li>
+  <li><em>reject an offer</em></li>
+  <li><em>strike a deal</em></li>
+</ul>
+
+📝 Grammar Focus
+
+Advanced conditionals in negotiation: Unless we agree, the deal will fail.",
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Advanced conditionals in negotiation:</strong> <code>Unless we agree, the deal will fail.</code></li>
+</ul>
+                    'listening_practice' => "Dengarkan simulasi negosiasi bisnis.",
+                    'speaking_practice' => "Unless we …, we won’t …."
+                ],
+                [
+                    'title' => 'Final Debate & Reflection',
+                    'content' => <<<'HTML'
+<h2>🎯 Learning Objectives</h2>
+<ul>
+  <li>Menggabungkan semua skill C1.</li>
+  <li>Melakukan debat formal dengan argumen kritis.</li>
+</ul>
+
+<h3>📖 Materi</h3>
+<p><strong>Semua tema:</strong></p>
+<ul>
+  <li>komunikasi</li>
+  <li>global issues</li>
+  <li>sains</li>
+  <li>etika</li>
+  <li>budaya</li>
+</ul>
+
+<h3>📝 Grammar Focus</h3>
+<ul>
+  <li><strong>Semua struktur advanced:</strong></li>
+  <ul>
+    <li><em>inversion</em></li>
+    <li><em>mixed conditionals</em></li>
+    <li><em>subjunctive</em></li>
+    <li><em>nominalisation</em></li>
+  </ul>
+</ul>
+HTML,
+                    'listening_practice' => "Dengarkan potongan debat universitas.",
+                    'speaking_practice' => "Debat topik: Technology brings more harm than good."
+                ]
+            ]
+        ];
+        
+        // Insert lessons for each course
+        foreach ($courseContent as $level => $courseLessons) {
+            $courseId = $courseIds[$level];
+            
+            foreach ($courseLessons as $lessonIndex => $lessonData) {
+                // Insert lesson
+                $lessonId = DB::table('lessons')->insertGetId([
+                    'course_id' => $courseId,
+                    'slug' => Str::slug($courseId . '-' . $lessonData['title']),
+                    'title' => $lessonData['title'],
+                    'content' => $lessonData['content'],
+                    'order' => $lessonIndex,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                
+                // Insert lesson audio practice
+                DB::table('lesson_audio')->insert([
+                    'lesson_id' => $lessonId,
+                    'description' => $lessonData['listening_practice'],
+                    'is_enabled' => true,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                
+                // Insert lesson speaking practice
+                DB::table('lesson_speaking')->insert([
+                    'lesson_id' => $lessonId,
+                    'description' => $lessonData['speaking_practice'],
+                    'is_enabled' => true,
+                    'duration' => 120, // Default 2 minutes
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+        }
+        
+        $this->command->info('Speakout courses, lessons, and practice content seeded successfully!');
+    }
+}
