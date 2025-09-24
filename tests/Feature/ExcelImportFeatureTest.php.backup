@@ -18,7 +18,7 @@ class ExcelImportFeatureTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
         
-        $response = $this->actingAs($admin)->get(route('admin.placement-tests.download-template'));
+        $response = $this->actingAs($admin)->get(route('placement-tests.download-template'));
         
         $response->assertStatus(200);
         $response->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -35,7 +35,7 @@ class ExcelImportFeatureTest extends TestCase
         Storage::fake('local');
         $file = UploadedFile::fake()->create('questions.xlsx', 100);
         
-        $response = $this->actingAs($admin)->post(route('admin.admin.placement-tests.import-questions', $placementTest), [
+        $response = $this->actingAs($admin)->post(route('admin.placement-tests.import-questions', $placementTest), [
             'excel_file' => $file
         ]);
         
@@ -53,7 +53,7 @@ class ExcelImportFeatureTest extends TestCase
         // Create a fake text file (invalid type)
         $file = UploadedFile::fake()->create('document.txt', 100);
         
-        $response = $this->actingAs($admin)->post(route('admin.admin.placement-tests.import-questions', $placementTest), [
+        $response = $this->actingAs($admin)->post(route('admin.placement-tests.import-questions', $placementTest), [
             'excel_file' => $file
         ]);
         
@@ -70,7 +70,7 @@ class ExcelImportFeatureTest extends TestCase
         // Create a fake file that's too large (3MB)
         $file = UploadedFile::fake()->create('large_file.xlsx', 3000);
         
-        $response = $this->actingAs($admin)->post(route('admin.admin.placement-tests.import-questions', $placementTest), [
+        $response = $this->actingAs($admin)->post(route('admin.placement-tests.import-questions', $placementTest), [
             'excel_file' => $file
         ]);
         
@@ -87,7 +87,7 @@ class ExcelImportFeatureTest extends TestCase
         // Create a fake Excel file
         $file = UploadedFile::fake()->create('questions.xlsx', 100);
         
-        $response = $this->actingAs($student)->post(route('admin.admin.placement-tests.import-questions', $placementTest), [
+        $response = $this->actingAs($student)->post(route('admin.placement-tests.import-questions', $placementTest), [
             'excel_file' => $file
         ]);
         

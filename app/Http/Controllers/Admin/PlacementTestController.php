@@ -239,6 +239,8 @@ class PlacementTestController extends Controller
      */
     public function downloadTemplate()
     {
+        \Log::info('Download template method called');
+        
         $headers = [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-Disposition' => 'attachment; filename="placement_test_questions_template.xlsx"',
@@ -274,6 +276,8 @@ class PlacementTestController extends Controller
         // Save the spreadsheet
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
         $writer->save($tempFile);
+        
+        \Log::info('About to return download response');
         
         // Return the file
         return response()->download($tempFile, 'placement_test_questions_template.xlsx', $headers)->deleteFileAfterSend(true);

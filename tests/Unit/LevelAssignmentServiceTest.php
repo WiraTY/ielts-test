@@ -107,8 +107,10 @@ class LevelAssignmentServiceTest extends TestCase
         
         $this->assertEquals('beginner', $service->getNextLevel('starter'));
         $this->assertEquals('elementary', $service->getNextLevel('beginner'));
-        $this->assertEquals('intermediate', $service->getNextLevel('elementary'));
-        $this->assertEquals('advanced', $service->getNextLevel('intermediate'));
+        $this->assertEquals('pre-intermediate', $service->getNextLevel('elementary'));
+        $this->assertEquals('intermediate', $service->getNextLevel('pre-intermediate'));
+        $this->assertEquals('upper-intermediate', $service->getNextLevel('intermediate'));
+        $this->assertEquals('advanced', $service->getNextLevel('upper-intermediate'));
         $this->assertNull($service->getNextLevel('advanced')); // No next level
     }
 }

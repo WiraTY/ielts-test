@@ -111,7 +111,7 @@ class LevelAssignmentService
     public function getNextLevel(string $currentLevel): ?string
     {
         // Definisikan urutan level berdasarkan skala GSE Pearson
-        $levelSequence = ['starter', 'elementary', 'pre-intermediate', 'intermediate', 'upper-intermediate', 'advanced'];
+        $levelSequence = ['starter', 'beginner', 'elementary', 'pre-intermediate', 'intermediate', 'upper-intermediate', 'advanced'];
         
         $currentIndex = array_search($currentLevel, $levelSequence);
         

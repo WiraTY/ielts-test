@@ -79,7 +79,7 @@ class Course extends Model
                 'total' => 0,
                 'completed' => 0,
                 'percentage' => 0,
-                'is_completed' => false
+                'is_completed' => true  // Course with no lessons is considered completed
             ];
         }
         

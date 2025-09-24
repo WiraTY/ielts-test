@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\PlacementTestAttempt;
+use App\Models\PlacementTestQuestion;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,6 +19,8 @@ class PlacementTestAnswerFactory extends Factory
     public function definition(): array
     {
         return [
+            'attempt_id' => PlacementTestAttempt::factory(),
+            'question_id' => PlacementTestQuestion::factory(),
             'selected_answer' => $this->faker->randomElement(['A', 'B', 'C', 'D']),
             'is_correct' => $this->faker->boolean,
             'score_awarded' => $this->faker->numberBetween(0, 1)

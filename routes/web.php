@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Student\RecordingController;
 use App\Http\Controllers\Admin\AudioController;
 
+
 Route::get('/', function () {
     return redirect()->route('courses.index');
 });
@@ -33,8 +34,12 @@ Route::get('/courses', function () {
 Route::get('/courses/{course:slug}', function (App\Models\Course $course) {
     // Check if user is authenticated
     if (auth()->check()) {
-        // For authenticated users, we still show the course but indicate if it's locked
-        // The actual lesson access will be blocked in the lessons route
+        $user = auth()->user();
+        
+        // Check if user has access to this course level
+        if (!$user->hasAccessToLevel($course->level)) {
+            abort(403, 'You do not have access to this course level. Complete previous courses to unlock this content.');
+        }
     } else {
         // For guest users, only allow access to starter level courses
         if ($course->level !== 'starter') {
@@ -149,8 +154,6 @@ Route::middleware(['auth', 'verified'])->post('/audio/store', [App\Http\Controll
 Route::middleware(['auth', 'verified'])->delete('/audio/{recording}', [App\Http\Controllers\Admin\AudioController::class, 'destroy'])->name('audio.destroy');
 
 // User routes
-
-// User routes
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Student\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile');
@@ -176,6 +179,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/placement-tests/{placementTest}/start', function (\App\Models\PlacementTest $placementTest) {
         return view('placement-tests.start', compact('placementTest'));
     })->name('placement-tests.start');
+    
+    Route::post('/placement-tests/{placementTest}/submit', function (\App\Models\PlacementTest $placementTest) {
+        // Proses submit dilakukan melalui Livewire component, jadi route ini hanya untuk kebutuhan test
+        // Redirect ke halaman hasil
+        $attempt = $placementTest->attempts()
+            ->where('user_id', auth()->id())
+            ->where('status', 'completed')
+            ->latest()
+            ->first();
+            
+        if ($attempt) {
+            return redirect()->route('placement-tests.result', $attempt);
+        }
+        
+        return redirect()->route('dashboard')->with('error', 'No placement test attempt found.');
+    })->name('placement-tests.submit');
     
     Route::get('/placement-tests/attempts/{attempt}', function (\App\Models\PlacementTestAttempt $attempt) {
         return view('placement-tests.result', compact('attempt'));

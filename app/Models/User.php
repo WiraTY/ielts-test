@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable
 {
@@ -111,6 +112,16 @@ class User extends Authenticatable
     public function getCurrentLevel()
     {
         return $this->current_level ?? 'starter';
+    }
+    
+    /**
+     * Set default value for current_level if null
+     */
+    protected function currentLevel(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => $value ?? 'starter',
+        );
     }
     
     /**

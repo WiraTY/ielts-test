@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\PlacementTest;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,6 +19,8 @@ class PlacementTestAttemptFactory extends Factory
     public function definition(): array
     {
         return [
+            'placement_test_id' => PlacementTest::factory(),
+            'user_id' => User::factory(),
             'started_at' => $this->faker->dateTime,
             'finished_at' => $this->faker->dateTime,
             'score' => $this->faker->numberBetween(0, 100),

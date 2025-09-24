@@ -171,6 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const roleSelect = document.getElementById('role');
     const studentFields = document.getElementById('student-fields');
     
+    // Toggle student fields when role changes
     roleSelect.addEventListener('change', function() {
         if (this.value === 'student') {
             studentFields.classList.remove('hidden');
@@ -179,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Add detailed form submission logging
+    // Add detailed form submission logging and ensure form works properly
     const form = document.getElementById('user-update-form');
     if (form) {
         form.addEventListener('submit', function(e) {
@@ -206,6 +207,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Form has empty required fields');
                 // Don't prevent submission, but log it
             }
+            
+            // Explicitly allow form submission to continue
+            console.log('Form submission proceeding...');
         });
     }
 });
