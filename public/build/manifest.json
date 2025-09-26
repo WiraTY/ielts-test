@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-CDExdmTO.css",
+    "file": "assets/app-BL8giv47.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "names": [
@@ -8,9 +8,18 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-C0G0cght.js",
+    "file": "assets/app-nBXbL_ro.js",
     "name": "app",
     "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "resources/js/pwa-features.js"
+    ]
+  },
+  "resources/js/pwa-features.js": {
+    "file": "assets/pwa-features-CBtLQlz-.js",
+    "name": "pwa-features",
+    "src": "resources/js/pwa-features.js",
     "isEntry": true
   }
 }

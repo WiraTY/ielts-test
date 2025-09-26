@@ -7,15 +7,21 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Livewire\AudioRecorder;
 use Livewire\Livewire;
+use App\Models\User;
 
 class AudioRecorderTest extends TestCase
 {
+    use RefreshDatabase;
     /**
      * Test that the timer counts down correctly.
      */
     public function test_timer_counts_down_correctly()
     {
-        Livewire::test(AudioRecorder::class, ['lessonId' => 1, 'duration' => 5])
+        $user = User::factory()->create();
+        $lesson = \App\Models\Lesson::factory()->create();
+        
+        Livewire::actingAs($user)
+            ->test(AudioRecorder::class, ['lessonId' => $lesson->id, 'duration' => 5])
             ->call('startRecording')
             ->assertSet('isRecording', true)
             ->assertSet('timeLeft', 5);
@@ -26,7 +32,11 @@ class AudioRecorderTest extends TestCase
      */
     public function test_timer_stops_recording_when_reaches_zero()
     {
-        Livewire::test(AudioRecorder::class, ['lessonId' => 1, 'duration' => 2])
+        $user = User::factory()->create();
+        $lesson = \App\Models\Lesson::factory()->create();
+        
+        Livewire::actingAs($user)
+            ->test(AudioRecorder::class, ['lessonId' => $lesson->id, 'duration' => 2])
             ->call('startRecording')
             ->call('updateTimer') // 2 -> 1
             ->assertSet('timeLeft', 1)

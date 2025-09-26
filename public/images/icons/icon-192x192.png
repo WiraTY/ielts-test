@@ -1,0 +1,19 @@
+<?php
+// This is a placeholder for PWA icons that would be generated in actual implementation
+// In a real environment, you would use Image intervention package to generate these
+// For now, this file just serves as a placeholder to prevent 404 errors
+
+// This file would normally contain code to generate the various icon sizes needed for PWA
+// The actual implementation would use Laravel's storage system to store these icons
+// and serve them from the public directory
+
+// Icon sizes needed:
+// - 72x72
+// - 96x96
+// - 128x128
+// - 144x144
+// - 152x152
+// - 192x192
+// - 384x384
+// - 512x512
+?>
