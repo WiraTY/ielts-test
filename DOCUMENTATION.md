@@ -1,4 +1,4 @@
-# Trial Class Application Documentation
+# TOEFL Test Management System Documentation
 
 ## Table of Contents
 1. [Overview](#overview)
@@ -16,41 +16,44 @@
 13. [Deployment](#deployment)
 14. [Troubleshooting](#troubleshooting)
 15. [Recent Updates and Changes](#recent-updates-and-changes)
-16. [Placement Test and Leveling System](#placement-test-and-leveling-system)
+16. [TOEFL Diagnostic and Assessment System](#toefl-diagnostic-and-assessment-system)
 
 ## Overview
 
-The Trial Class Application is a Laravel + Livewire platform designed for educational institutions to offer trial classes with lessons and quizzes. It allows students to access course materials (text and video content) and take online tests, while providing administrators with tools to manage courses, lessons, and assessments.
+The TOEFL Test Management System is a comprehensive Laravel + Livewire platform designed specifically for TOEFL (Test of English as a Foreign Language) preparation and assessment. The system provides students with targeted practice across all four TOEFL sections (Reading, Listening, Speaking, Writing), includes a sophisticated diagnostic test system, and offers administrators powerful tools for content management and student progress tracking.
 
 ## Features
 
 ### For Students:
 - User authentication (registration/login)
-- Course catalog browsing with level-based access control
-- Lesson content viewing (text and embedded videos)
-- Quiz taking with multiple question types (MCQ, multi-select, essay)
-- Progress tracking
-- Dashboard with statistics and recommendations
-- Placement test for level assessment
-- Level-based course access
-- Audio listening and speaking practice exercises
-- Speaking practice recording with playback
-- Student recordings management with inline playback and deletion
-- Persistent placement test access in navigation menu
+- **TOEFL Section-Specific Courses**: Targeted practice for Reading, Listening, Speaking, and Writing sections
+- **Comprehensive TOEFL Diagnostic Test**: Initial assessment to identify strengths and weaknesses
+- **Personalized Learning Paths**: Course recommendations based on diagnostic results and performance
+- **Section-Wise Progress Tracking**: Detailed progress monitoring for each TOEFL section
+- **Score Tracking & Analytics**: Track improvement over time with detailed performance metrics
+- **Target Score Setting**: Set and monitor progress toward specific TOEFL score goals
+- **Advanced Question Types**: Full support for all TOEFL question formats
+  - Reading: Factual information, inference, vocabulary, prose summary, sentence insertion
+  - Listening: Gist questions, detail questions, attitude, organization, inference
+  - Speaking: Independent tasks and integrated speaking tasks with recording capabilities
+  - Writing: Integrated writing tasks and independent essays
+- **Weak Area Identification**: Automatic detection of areas needing improvement
+- **Study Recommendations**: Personalized study plans based on performance data
+- **Practice Sessions**: Timed practice with immediate feedback and scoring
 
 ### For Administrators:
-- Course management (CRUD operations)
-- Lesson management with WYSIWYG editor
-- Quiz and question management
-- User management
-- Progress tracking and reporting
-- Content upload capabilities
-- Quick switching between admin and student views
-- Placement test management with Excel import
-- Level assignment and progression tracking
-- Bulk course level assignment
-- Detailed reporting and analytics
-- Course thumbnail management
+- **TOEFL Course Management**: Create and manage section-specific courses with difficulty levels
+- **Diagnostic Test Management**: Create comprehensive TOEFL diagnostic assessments
+- **Advanced Question Management**: Support for all TOEFL question types with rubrics and sample answers
+- **User Progress Analytics**: Comprehensive reporting on student performance across all sections
+- **Score Tracking Dashboard**: Monitor student improvement and identify trends
+- **Content Organization**: Organize courses by section, difficulty, and target score ranges
+- **Automatic Weak Area Detection**: System identifies and highlights student weaknesses
+- **Personalized Recommendations Management**: Configure recommendation algorithms
+- **Performance Reporting**: Detailed analytics for individual students and groups
+- **TOEFL Score Band Management**: Track student progress through score bands (0-120 scale)
+- **Diagnostic Test Analysis**: In-depth analysis of diagnostic test results
+- **Content Curation**: Curate learning paths based on performance data
 
 ### Technical Features:
 - Responsive design with TailwindCSS
@@ -127,6 +130,17 @@ database/
 - assigned_level (string, nullable) - starter, beginner, elementary, intermediate, advanced
 - current_level (string, nullable) - starter, beginner, elementary, intermediate, advanced
 - unlocked_levels (json, nullable) - array of levels unlocked by the user
+- **TOEFL-Specific Fields:**
+- toefl_target_score (integer, default: 80) - Target TOEFL score
+- toefl_latest_reading_score (integer, default: 0) - Latest reading section score
+- toefl_latest_listening_score (integer, default: 0) - Latest listening section score
+- toefl_latest_speaking_score (integer, default: 0) - Latest speaking section score
+- toefl_latest_writing_score (integer, default: 0) - Latest writing section score
+- toefl_latest_total_score (integer, virtual: sum of latest section scores)
+- toefl_test_date (date, nullable) - Date of latest TOEFL test
+- toefl_weak_areas (json, nullable) - Array of weak sections
+- toefl_study_notes (text, nullable) - Student's study notes
+- has_taken_toefl_diagnostic (boolean, default: false) - Whether user completed diagnostic
 - created_at, updated_at (timestamps)
 
 ### Courses
@@ -140,6 +154,13 @@ database/
 - created_by (foreign key to users.id)
 - published_at (timestamp, nullable)
 - order (integer, default: 0)
+- **TOEFL-Specific Fields:**
+- toefl_section (enum: 'reading', 'listening', 'speaking', 'writing', 'general', nullable) - TOEFL section
+- target_score_min (integer, default: 0) - Minimum score for course access
+- target_score_max (integer, default: 30) - Maximum score for course benefit
+- section_description (text, nullable) - Detailed section-specific description
+- is_toefl_practice (boolean, default: false) - Whether this is a TOEFL practice course
+- difficulty_level (string, default: 'intermediate') - easy, intermediate, advanced
 - created_at, updated_at (timestamps)
 
 ### Lessons
@@ -169,7 +190,20 @@ database/
 - options (json, nullable)
 - answer_key (json, nullable)
 - score (integer, default: 1)
+- **TOEFL-Specific Fields:**
+- toefl_section (enum: 'reading', 'listening', 'speaking', 'writing', nullable) - TOEFL section
+- toefl_question_type (enum: Various TOEFL question types, nullable) - Specific TOEFL question format
+- time_limit_seconds (integer, nullable) - Time limit for answering
+- preparation_time_notes (text, nullable) - Preparation time instructions
+- scoring_rubric (json, nullable) - Evaluation rubric for speaking/writing
+- sample_answer (json, nullable) - Sample answer for reference
 - created_at, updated_at (timestamps)
+
+**TOEFL Question Types:**
+- **Reading:** reading_factual_information, reading_negative_factual_information, reading_inference, reading_rhetorical_purpose, reading_vocabulary, reading_reference, reading_sentence_insertion, reading_prose_summary, reading_fill_in_table, reading_complete_summary
+- **Listening:** listening_gist_content, listening_gist_purpose, listening_detail, listening_function, listening_attitude, listening_organization, listening_connecting_content, listening_inference
+- **Speaking:** speaking_independent_personal_preference, speaking_independent_choice, speaking_integrated_campus_situation, speaking_integrated_academic_course, speaking_integrated_reading_listening
+- **Writing:** writing_integrated_reading_listening, writing_independent_essay
 
 ### QuizAttempts
 - id (bigint, primary)
@@ -259,6 +293,87 @@ database/
 - user_id (foreign key to users.id)
 - lesson_id (foreign key to lessons.id)
 - file_path (string)
+- created_at, updated_at (timestamps)
+
+### TOEFL Scores
+- id (bigint, primary)
+- user_id (foreign key to users.id)
+- test_type (enum: 'practice', 'diagnostic', 'official')
+- reading_score (integer, default: 0)
+- listening_score (integer, default: 0)
+- speaking_score (integer, default: 0)
+- writing_score (integer, default: 0)
+- total_score (integer, virtual: sum of section scores)
+- test_date (timestamp, nullable)
+- notes (text, nullable)
+- created_at, updated_at (timestamps)
+
+### TOEFL Practice Sessions
+- id (bigint, primary)
+- user_id (foreign key to users.id)
+- course_id (foreign key to courses.id)
+- lesson_id (foreign key to lessons.id)
+- section (enum: 'reading', 'listening', 'speaking', 'writing')
+- status (enum: 'started', 'in_progress', 'completed', 'timeout')
+- started_at (timestamp, nullable)
+- completed_at (timestamp, nullable)
+- time_spent_seconds (integer, default: 0)
+- score (integer, default: 0)
+- total_possible (integer, default: 0)
+- accuracy_percentage (decimal, default: 0.00)
+- feedback (text, nullable)
+- session_data (json, nullable)
+- created_at, updated_at (timestamps)
+
+### TOEFL Diagnostic Tests
+- id (bigint, primary)
+- title (string)
+- description (text, nullable)
+- duration_minutes (integer, default: 120)
+- is_active (boolean, default: true)
+- section_weights (json, nullable) - Weight distribution for each section
+- score_ranges (json, nullable) - Score range mappings for performance levels
+- recommendations (text, nullable)
+- created_at, updated_at (timestamps)
+
+### TOEFL Diagnostic Questions
+- id (bigint, primary)
+- toefl_diagnostic_test_id (foreign key to toefl_diagnostic_tests.id)
+- section (enum: 'reading', 'listening', 'speaking', 'writing')
+- question_text (text)
+- options (json, nullable) - For multiple choice questions
+- correct_answer (string, nullable) - Correct answer for multiple choice
+- score (integer, default: 1)
+- order (integer, default: 0)
+- explanation (text, nullable)
+- rubric (json, nullable) - Scoring rubric for speaking/writing
+- created_at, updated_at (timestamps)
+
+### TOEFL Diagnostic Attempts
+- id (bigint, primary)
+- toefl_diagnostic_test_id (foreign key to toefl_diagnostic_tests.id)
+- user_id (foreign key to users.id)
+- started_at (timestamp, nullable)
+- finished_at (timestamp, nullable)
+- reading_score (integer, default: 0)
+- listening_score (integer, default: 0)
+- speaking_score (integer, default: 0)
+- writing_score (integer, default: 0)
+- total_score (integer, virtual: sum of section scores)
+- status (enum: 'in_progress', 'completed', 'timeout')
+- section_feedback (json, nullable)
+- overall_feedback (text, nullable)
+- recommendations (json, nullable)
+- created_at, updated_at (timestamps)
+
+### TOEFL Diagnostic Answers
+- id (bigint, primary)
+- attempt_id (foreign key to toefl_diagnostic_attempts.id)
+- question_id (foreign key to toefl_diagnostic_questions.id)
+- answer (text)
+- is_correct (boolean, nullable)
+- score_awarded (integer, default: 0)
+- feedback (text, nullable)
 - created_at, updated_at (timestamps)
 
 ## Installation
@@ -895,93 +1010,125 @@ These updates have significantly improved the application's reliability and test
 
 These updates resolve the critical issue where administrators were unable to update user information in the admin panel. The JavaScript error that was preventing form submission has been fixed, and the backend validation logic has been improved for better reliability and error handling.
 
-## Placement Test and Leveling System
+## TOEFL Diagnostic and Assessment System
 
 ### Overview
-The Placement Test and Leveling System is a comprehensive feature that allows students to assess their English proficiency and access courses appropriate to their skill level. This system enhances the educational platform by providing personalized learning paths based on individual abilities, utilizing the Pearson Global Scale of English (GSE) for accurate proficiency assessment.
+The TOEFL Diagnostic and Assessment System is a comprehensive feature designed specifically for TOEFL preparation and skill assessment. The system provides students with accurate TOEFL-level evaluations across all four sections (Reading, Listening, Speaking, Writing) and offers personalized learning paths based on individual performance patterns.
 
-### Pearson Global Scale of English (GSE) Alignment
-The system implements the Pearson GSE scale for accurate English proficiency measurement:
+### TOEFL Score Band Alignment
+The system implements the official TOEFL scoring scale (0-120) with performance level classifications:
 
-| Speakout Level | CEFR | GSE Range |
-|----------------|------|-----------|
-| Starter | A1–A1+ | 22 – 35 |
-| Elementary | A1+–A2 | 30 – 42 |
-| Pre-Intermediate | A2–B1- | 36 – 46 |
-| Intermediate | B1 | 46 – 58 |
-| Upper Intermediate | B2 | 57 – 67 |
-| Advanced | C1 | 66 – 78 |
-
-This alignment ensures accurate placement of students based on internationally recognized English proficiency standards.
+| Total Score | Performance Level | CEFR Equivalent | Description |
+|-------------|-------------------|------------------|-------------|
+| 110-120 | Expert | C2 | Can use English fluently and spontaneously |
+| 95-109 | Very Good | C1 | Can use English effectively for professional purposes |
+| 80-94 | Good | B2 | Can use English effectively and independently |
+| 65-79 | Fair | B1 | Can use English in familiar situations |
+| 50-64 | Limited | A2 | Can communicate in basic English |
+| 0-49 | Very Limited | A1 | Can understand and use familiar phrases |
 
 ### Key Components
 
-#### 1. Placement Tests
-- **Purpose**: Assess student English proficiency to determine appropriate course levels using GSE-aligned scoring
-- **Structure**: Multiple-choice questions with configurable scoring and time limits
-- **Management**: Admin interface for creating, editing, and managing placement tests
-- **Import**: Excel import functionality for bulk question management
-- **Scoring**: Automatic scoring with GSE-aligned level mapping based on score ranges
+#### 1. TOEFL Diagnostic Test
+- **Purpose**: Comprehensive assessment of TOEFL readiness across all four sections
+- **Structure**: Balanced questions covering all TOEFL question types for each section
+- **Scoring**: Automatic scoring with detailed performance analysis and recommendations
+- **Time Management**: 120-minute duration mimicking real TOEFL test conditions
+- **Performance Analysis**: Detailed breakdown of strengths and weaknesses by section
 
-#### 2. Leveling System
-- **Levels**: Six proficiency levels aligned with GSE (Starter, Elementary, Pre-Intermediate, Intermediate, Upper Intermediate, Advanced)
-- **Assignment**: Automatic level assignment based on GSE-aligned placement test scores
-- **Progression**: Automatic level progression after completing all courses at current level
-- **Access Control**: Students can only access courses at their current level or unlocked levels
+#### 2. Section-Specific Practice Courses
+- **Reading Section**: Factual information, inference, vocabulary, prose summary, sentence insertion questions
+- **Listening Section**: Gist questions, detail questions, speaker attitude, organization questions
+- **Speaking Section**: Independent tasks and integrated speaking with recording and evaluation
+- **Writing Section**: Integrated writing tasks and independent essays with comprehensive rubrics
 
-#### 3. Course Leveling
-- **Level Assignment**: Courses are assigned specific GSE-aligned levels during creation
-- **Bulk Assignment**: Admin interface for assigning levels to multiple courses
-- **Access Filtering**: Course listings automatically filtered based on student's assigned level
+#### 3. Performance Tracking System
+- **Score History**: Track improvement over time with detailed section-wise scores
+- **Weak Area Detection**: Automatic identification of sections needing improvement
+- **Progress Analytics**: Comprehensive analytics on practice session performance
+- **Target Score Monitoring**: Set and track progress toward specific TOEFL score goals
 
-#### 4. Student Progression
-- **Level Tracking**: Dashboard displays current GSE-aligned level and progress toward next level
-- **Completion Monitoring**: System tracks course completion to determine level advancement eligibility
-- **Automatic Advancement**: Students automatically progress to next GSE level after completing all courses at current level
+#### 4. Personalized Learning Paths
+- **Course Recommendations**: Based on diagnostic results and performance patterns
+- **Difficulty Leveling**: Courses organized by skill level (Beginner, Intermediate, Advanced)
+- **Target Score Ranges**: Each course designed for specific score improvement ranges
+- **Adaptive Content**: Content adapts to student performance and progress
+
+### TOEFL Question Type Support
+
+#### Reading Section Question Types
+- **Factual Information**: Direct understanding of explicit information
+- **Negative Factual Information**: Identifying what is NOT mentioned in the passage
+- **Inference Questions**: Understanding implied meanings and conclusions
+- **Rhetorical Purpose**: Understanding why the author includes specific information
+- **Vocabulary**: Understanding word meanings in context
+- **Reference**: Understanding what pronouns and other references refer to
+- **Sentence Insertion**: Identifying where sentences best fit in a passage
+- **Prose Summary**: Selecting main ideas that best summarize the passage
+- **Fill in Table**: Organizing information from the passage into categories
+
+#### Listening Section Question Types
+- **Gist Content**: Understanding the main topic or purpose of conversations/lectures
+- **Gist Purpose**: Understanding the primary reason something is said
+- **Detail Questions**: Remembering specific information mentioned
+- **Function Questions**: Understanding the purpose of statements
+- **Attitude Questions**: Understanding the speaker's opinion or feelings
+- **Organization Questions**: Understanding how information is structured
+- **Connecting Content**: Understanding relationships between ideas
+
+#### Speaking Section Question Types
+- **Independent Tasks**: Personal preference, choice, and opinion questions
+- **Integrated Tasks**: Campus situations, academic courses, reading/listening integration
+- **Scoring**: Based on delivery, language use, and topic development
+
+#### Writing Section Question Types
+- **Integrated Writing**: Summarizing and comparing reading and listening passages
+- **Independent Essay**: Expressing and supporting opinions on given topics
+- **Scoring**: Based on organization, development, language use, and mechanics
 
 ### Implementation Details
 
-#### Database Schema Extensions
-- Added `level` column to `courses` table to store course level assignments
-- Extended `users` table with:
-  - `has_taken_placement_test` (boolean) - Tracks if student has completed placement test
-  - `assigned_level` (string) - Initial level assigned based on placement test aligned with GSE
-  - `current_level` (string) - Student's current accessible level
-  - `unlocked_levels` (json) - Array of levels unlocked by student
+#### Enhanced User Profiles
+- **TOEFL Target Score**: Personal score goals for motivation and progress tracking
+- **Section Scores**: Individual tracking of Reading, Listening, Speaking, Writing scores
+- **Performance History**: Complete record of all practice sessions and diagnostic attempts
+- **Study Notes**: Personal notes and study strategies storage
+- **Weak Areas**: Automatic identification of sections needing focus
 
-#### New Database Tables
-- `placement_tests` - Stores placement test definitions with GSE-aligned level mapping
-- `placement_test_questions` - Contains questions for placement tests
-- `placement_test_attempts` - Tracks student attempts at placement tests
-- `placement_test_answers` - Stores student answers for placement test questions
+#### Advanced Question Management
+- **TOEFL Question Types**: Support for all official TOEFL question formats
+- **Scoring Rubrics**: Detailed evaluation criteria for speaking and writing
+- **Sample Answers**: High-quality examples for student reference
+- **Time Limits**: Section-specific timing to match real test conditions
 
-#### Core Functionality
-- **Level Assignment Service**: Algorithm to determine appropriate GSE-aligned level based on test scores
-- **Progression Logic**: System to monitor course completion and automatically advance students to next GSE level
-- **Access Control**: Middleware to restrict course access based on student levels
-- **Reporting**: Comprehensive dashboards for admins to monitor student progress and placement test results
+#### Comprehensive Analytics
+- **Section Performance**: Detailed analysis by section with trend identification
+- **Score Progression**: Track improvement over time with visual analytics
+- **Practice Patterns**: Identify most effective study times and methods
+- **Achievement Tracking**: Monitor completion of courses and practice milestones
 
 ### User Experience
 
 #### For Students
-- **Initial Assessment**: Prompt to take GSE-aligned placement test upon first login
-- **Personalized Catalog**: Course catalog filtered to show only accessible courses based on GSE level
-- **Progress Tracking**: Dashboard showing current GSE level, progress, and advancement requirements
-- **Level Advancement**: Automatic progression notification after completing level requirements aligned with GSE
+- **Initial Diagnostic**: Comprehensive TOEFL assessment to establish baseline skills
+- **Personalized Dashboard**: Section-wise scores, progress tracking, and recommendations
+- **Targeted Practice**: Courses and exercises specifically addressing weak areas
+- **Progress Motivation**: Clear indicators of improvement and achievements
+- **Flexible Learning**: Access to appropriate content based on current skill level
 
 #### For Administrators
-- **Test Management**: Interface to create, edit, and manage GSE-aligned placement tests
-- **Question Import**: Excel import functionality for bulk question management
-- **Level Assignment**: Tools to assign GSE-aligned levels to courses and students
-- **Progress Monitoring**: Dashboards to track student progression and placement test results
-- **Reporting**: Detailed analytics on placement test performance and GSE level distribution
+- **Diagnostic Test Management**: Create and manage comprehensive TOEFL assessments
+- **Content Curation**: Organize courses by section, difficulty, and target score ranges
+- **Performance Monitoring**: Detailed analytics on student progress and effectiveness
+- **Intervention Tools**: Identify students who need additional support
+- **Success Tracking**: Monitor overall program effectiveness and student outcomes
 
 ### Benefits
-- **Personalized Learning**: Students access content appropriate to their GSE-aligned skill level
-- **Structured Progression**: Clear pathway from beginner to advanced levels using internationally recognized standards
-- **Efficient Resource Allocation**: Courses tailored to specific GSE proficiency levels
-- **Enhanced Engagement**: Reduced frustration from overly difficult or simplistic content
-- **Measurable Progress**: Clear metrics for student advancement and institutional effectiveness using GSE benchmarks
-- **International Standards**: Alignment with Pearson's Global Scale of English for global recognition
+- **Targeted Improvement**: Focus on specific sections that need the most work
+- **Realistic Assessment**: Accurate measurement of TOEFL readiness using official formats
+- **Comprehensive Coverage**: Complete preparation for all four TOEFL sections
+- **Data-Driven Learning**: Personalized study paths based on actual performance
+- **Progress Motivation**: Clear metrics and achievements to maintain engagement
+- **Professional Preparation**: Industry-standard TOEFL question types and scoring
 
-This placement test and leveling system transforms the Trial Class Application from a generic course platform into a sophisticated, adaptive learning environment that grows with each student's abilities, utilizing internationally recognized Pearson GSE standards for accurate proficiency assessment.
+This TOEFL Diagnostic and Assessment System transforms the platform into a sophisticated, data-driven TOEFL preparation environment that provides students with targeted, effective preparation while giving administrators comprehensive tools for monitoring and managing student success.
