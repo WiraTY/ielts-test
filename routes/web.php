@@ -110,7 +110,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     
     Route::resource('courses', App\Http\Controllers\Admin\CourseController::class);
     Route::get('/courses/bulk-assign-level', [App\Http\Controllers\Admin\CourseController::class, 'showBulkAssignLevel'])->name('courses.bulk-assign-level');
-    Route::post('/courses/bulk-assign-level', [App\Http\Controllers\Admin\CourseController::class, 'bulkAssignLevel'])->name('courses.bulk-assign-level');
+    Route::post('/courses/bulk-assign-level', [App\Http\Controllers\Admin\CourseController::class, 'bulkAssignLevel'])->name('courses.bulk-assign-level.store');
     Route::resource('courses.lessons', App\Http\Controllers\Admin\LessonController::class);
     
     // Audio & Speaking routes for lessons
